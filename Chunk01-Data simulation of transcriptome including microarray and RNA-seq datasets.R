@@ -61,6 +61,18 @@ seqdata.obj <- generateSyntheticData(dataset = "seq.data",
                                     output.file = "seqdata.rds")
 
 
+library(compareDEtools)
+
+GenerateSyntheticSimulation(working.dir = ".", 
+                            #data.types = "KIRC", 
+                            # rep = 10, 
+                            nsample = c(15, 16), 
+                            nvar = 2000, 
+                            nDE = 100, 
+                            fraction.upregulated = 0.5, 
+                            disp.Types = 'same', 
+                            modes = c("D"))
+
 
 ### End. 
 
