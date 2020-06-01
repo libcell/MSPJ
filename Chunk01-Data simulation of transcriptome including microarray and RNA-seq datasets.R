@@ -1,4 +1,14 @@
 
+################################################################################
+#    &&&....&&&    % Project: MSPJ approach for identification of DEGs         #
+#  &&&&&&..&&&&&&  % Author: Bo Li, Huachun Yin, Jingxin Tao, Youjin Hao       #
+#  &&&&&&&&&&&&&&  % Date: Jun. 1st, 2020                                      #
+#   &&&&&&&&&&&&   %                                                           #
+#     &&&&&&&&     % Environment: R version 3.5.3;                             #
+#       &&&&       % Platform: x86_64-pc-linux-gnu (64-bit)                    #
+#        &         %                                                           #
+################################################################################
+
 ### ****************************************************************************
 ### code chunk number 01: Data simulation of transcriptome.
 ### ****************************************************************************
@@ -61,18 +71,19 @@ seqdata.obj <- generateSyntheticData(dataset = "seq.data",
                                     output.file = "seqdata.rds")
 
 
-library(compareDEtools)
 
-GenerateSyntheticSimulation(working.dir = ".", 
-                            #data.types = "KIRC", 
-                            # rep = 10, 
-                            nsample = c(15, 16), 
-                            nvar = 2000, 
-                            nDE = 100, 
-                            fraction.upregulated = 0.5, 
-                            disp.Types = 'same', 
-                            modes = c("D"))
 
+#. library(compareDEtools)
+#. sim.data <- GenerateSyntheticSimulation(working.dir = ".", 
+#.                                         data.types = 'KIRC', 
+#.                                         rep.end = 1, 
+#.                                         nsample = 5, 
+#.                                         nvar = 10000, 
+#.                                         nDE = 200, 
+#.                                         fraction.upregulated = 0.67, 
+#.                                         disp.Types = 'same', 
+#.                                         modes='D') # Generate KIRC synthetic data with high proportion of DE genes
+#. sim.data <- readRDS(".KIRC_D_200DE_5spc_upFrac_0.67_rep_1.rds")
 
 ### End. 
 
