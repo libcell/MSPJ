@@ -36,11 +36,8 @@ eset <- get(load("seq.matrix.RData"))
 # ord.gene: which gene you focused on. 
 
 set.n <- 40
-
 size.min <- 10
-
 size.max <- 20
-
 ord.gene <- 10
 
 
