@@ -22,17 +22,18 @@
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Loading the gene expression data in *.csv
 
-load("seq.matrix.RData")
-
-
-
-
-
-
-
-
-
 library(meta)
+
+eset <- get(load("seq.matrix.RData"))
+
+
+### ------------------------------------------------------------------------ ###
+### Step-02. Setting the parameters used for re-sampling.
+
+# set.n: the times of resampling, or the number of sub-groups.   
+# size.min: the lower limit of sample size
+# size.max: the maximum sample size
+# ord.gene: which gene you focused on. 
 
 set.n <- 40
 
@@ -42,23 +43,6 @@ size.max <- 20
 
 ord.gene <- 10
 
-### ****************************************************************************
-### code chunk number 01: Loading the gene expression data in *.csv
-### ****************************************************************************
-
-### ------------------------------------------------------------------------ ###
-### Step-01. Preparing the GEO accession number for GEO Series.
-
-eset <- as.data.frame(matrix(rnorm(20000 * 20, 10, 5), 20000, 20))
-
-eset[1:100, 1:8] <- eset[1:100, 1:8] + 50
-
-eset[101:200, 9:20] <- eset[101:200, 9:20] + 50
-
-rownames(eset) <- paste("Gene", 1:20000, sep = "-")
-
-colnames(eset) <- c(paste("Experimental", 1:8, sep = "-"), 
-                    paste("Control", 1:12, sep = "-"))
 
 sample.sets <- list()
 
@@ -70,6 +54,14 @@ for (i in 1:set.n) {
 }
 
 names(sample.sets) <- paste("sampling_set", 1:set.n, sep = "-")
+
+
+
+
+
+
+
+
 
 ### ------------------------------------------------------------------------ ###
 ### Step-02. Computing the statistics used for meta-analysis.
