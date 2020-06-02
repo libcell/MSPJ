@@ -63,12 +63,12 @@ library(compcodeR)
 
 tmpdir <- normalizePath(tempdir(), winslash = "/")
 
-seqdata.obj <- generateSyntheticData(dataset = "seq.data", 
-                                    n.vars = 20000, # the number of genes
-                                    samples.per.cond = 15, # 
-                                    n.diffexp = 500,
-                                    fraction.upregulated = 0.5,
-                                    output.file = "seqdata.rds")
+seqdata.obj <- generateSyntheticData.yhc(dataset = "seq.data", 
+                                         n.vars = 20000, # the number of genes
+                                         samples.per.cond = 15, # 
+                                         n.diffexp = 500,
+                                         fraction.upregulated = 0.5,
+                                         output.file = "seqdata.rds")
 
 
 
