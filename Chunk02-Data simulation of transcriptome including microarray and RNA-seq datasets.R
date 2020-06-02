@@ -59,17 +59,21 @@ table(mcr.data$xid)
 
 ### Step-02. Data simulation of RNA-sequencing using compcodeR package.
 
+# Warnning: you must run the module chunk01 before this step. 
+
 library(compcodeR)
 
 # tmpdir <- normalizePath(tempdir(), winslash = "/")
 
 seqdata.obj <- generateSyntheticData.yhc(dataset = "seq.data", 
-                                         n.vars = 2000, # the number of genes
+                                         n.vars = 20000, # the number of genes
                                          m1 = 15, # 
                                          m2 = 10, # 
                                          n.diffexp = 500,
                                          fraction.upregulated = 0.5,
                                          output.file = "seqdata.rds")
+
+# extracting the gene expression matrix. 
 
 seq.matrix <- seqdata.obj@count.matrix
 
