@@ -61,33 +61,30 @@ table(mcr.data$xid)
 
 library(compcodeR)
 
-tmpdir <- normalizePath(tempdir(), winslash = "/")
+# tmpdir <- normalizePath(tempdir(), winslash = "/")
 
 seqdata.obj <- generateSyntheticData.yhc(dataset = "seq.data", 
-                                         n.vars = 30000, # the number of genes
+                                         n.vars = 2000, # the number of genes
                                          m1 = 15, # 
-                                         m2 = 10, 
+                                         m2 = 10, # 
                                          n.diffexp = 500,
                                          fraction.upregulated = 0.5,
                                          output.file = "seqdata.rds")
 
-seqdata <-convertcompDataToList(seqdata.obj)
+seq.matrix <- seqdata.obj@count.matrix
 
-seq.matrix <- seqdata$count.matrix
+seq.varanno <- seqdata.obj@variable.annotations
+seq.samanno <- seqdata.obj@sample.annotations
+
+seq.upvar <- table(seq.varanno$upregulation)
+
+up.gene <- rownames(seq.matrix)[seq.varanno$upregulation == 1]
+
+seq.downvar <- table(seq.varanno$downregulation)
+
+down.gene <- rownames(seq.matrix)[seq.varanno$downregulation == 1]
 
 dim(seq.matrix)
-
-#. library(compareDEtools)
-#. sim.data <- GenerateSyntheticSimulation(working.dir = ".", 
-#.                                         data.types = 'KIRC', 
-#.                                         rep.end = 1, 
-#.                                         nsample = 5, 
-#.                                         nvar = 10000, 
-#.                                         nDE = 200, 
-#.                                         fraction.upregulated = 0.67, 
-#.                                         disp.Types = 'same', 
-#.                                         modes='D') # Generate KIRC synthetic data with high proportion of DE genes
-#. sim.data <- readRDS(".KIRC_D_200DE_5spc_upFrac_0.67_rep_1.rds")
 
 ### End. 
 
