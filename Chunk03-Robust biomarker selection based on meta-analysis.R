@@ -22,7 +22,7 @@
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Loading the gene expression data in *.csv
 
-
+load("seq.matrix.RData")
 
 library(meta)
 
