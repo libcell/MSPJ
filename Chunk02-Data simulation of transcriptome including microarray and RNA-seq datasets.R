@@ -78,6 +78,7 @@ seqdata.obj <- generateSyntheticData.yhc(dataset = "seq.data",
 seq.matrix <- seqdata.obj@count.matrix
 
 seq.varanno <- seqdata.obj@variable.annotations
+
 seq.samanno <- seqdata.obj@sample.annotations
 
 seq.upvar <- table(seq.varanno$upregulation)
