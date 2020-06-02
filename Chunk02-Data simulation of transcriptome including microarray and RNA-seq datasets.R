@@ -64,14 +64,18 @@ library(compcodeR)
 tmpdir <- normalizePath(tempdir(), winslash = "/")
 
 seqdata.obj <- generateSyntheticData.yhc(dataset = "seq.data", 
-                                         n.vars = 20000, # the number of genes
-                                         samples.per.cond = 15, # 
+                                         n.vars = 30000, # the number of genes
+                                         m1 = 15, # 
+                                         m2 = 10, 
                                          n.diffexp = 500,
                                          fraction.upregulated = 0.5,
                                          output.file = "seqdata.rds")
 
+seqdata <-convertcompDataToList(seqdata.obj)
 
+seq.matrix <- seqdata$count.matrix
 
+dim(seq.matrix)
 
 #. library(compareDEtools)
 #. sim.data <- GenerateSyntheticSimulation(working.dir = ".", 
@@ -86,5 +90,4 @@ seqdata.obj <- generateSyntheticData.yhc(dataset = "seq.data",
 #. sim.data <- readRDS(".KIRC_D_200DE_5spc_upFrac_0.67_rep_1.rds")
 
 ### End. 
-
 
