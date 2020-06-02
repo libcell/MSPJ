@@ -314,8 +314,8 @@ generateSyntheticData.yhc <- function(dataset,
   filtering <- paste(filtering, "; ", paste("median cpm >=", 
                                             filter.threshold.mediancpm))
   rownames(Z.TC) <- paste("g", 1:nrow(Z.TC), sep = "")
-  cont <- paste("cont", 1:m1, sep = "")
-  test <- paste("test", 1:m2, sep = "")
+  cont <- paste("Experimental", 1:m1, sep = "-") # naming the experimental samples
+  test <- paste("Control", 1:m2, sep = "-") # naming the control samples
   colnames(Z.TC) <- c(cont, test)
   rownames(sample.annotations) <- colnames(Z.TC)
   rownames(variable.annotations.TC) <- rownames(Z.TC)
