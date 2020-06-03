@@ -91,11 +91,13 @@ set.n <- length(sample.sets)
 
 cutoff <- 0.5
 
+na.index <- NULL
+
 up.index <- NULL
 
 down.index <- NULL
 
-for (ord.gene in 1:nrow(eset)) {
+for (ord.gene in 290:nrow(eset)) {
   
   # ord.gene <- 10
   
@@ -190,32 +192,42 @@ for (ord.gene in 1:nrow(eset)) {
   
   # Finally, DEGs were identified by above indexes. 
   
-  if (lTE.r > cutoff & lTE.f > cutoff) {
+  if (!is.na(lTE.r) & !is.na(lTE.f) & !is.na(uTE.r) & !is.na(uTE.f)) {
     
-    up.index <- c(up.index, ord.gene)
+    if (lTE.r > cutoff & lTE.f > cutoff) {
+      
+      up.index <- c(up.index, ord.gene)
+      
+      up.inf <- paste("The gene", ord.gene, "was up-regulated!", sep = " ")
+      
+      print(up.inf)
+      
+    } else 
+      
+      if (uTE.r < -cutoff & uTE.f < -cutoff) {
+        
+        down.index <- c(down.index, ord.gene)
+        
+        down.inf <- paste("The gene", ord.gene, "was down-regulated!", sep = " ")
+        
+        print(down.inf)
+        
+      } else {
+        
+        non.inf <- paste("The gene", ord.gene, "was not changed at the significant level with 0.05!", sep = " ")
+        
+        print(non.inf)
+        
+      }
     
-    up.inf <- paste("The gene", ord.gene, "was up-regulated!", sep = " ")
+  } else {
     
-    print(up.inf)
+    na.index <- c(na.index, ord.gene) ############
     
-  } else 
+    next
     
-    if (uTE.r < -cutoff & uTE.f < -cutoff) {
-      
-      down.index <- c(down.index, ord.gene)
-      
-      down.inf <- paste("The gene", ord.gene, "was down-regulated!", sep = " ")
-      
-      print(down.inf)
-      
-    } else {
-      
-      non.inf <- paste("The gene", ord.gene, "was not changed at the significant level with 0.05!", sep = " ")
-      
-      print(non.inf)
-      
-    }
-      
+  }
+  
   Sys.sleep(3)
 }
 
