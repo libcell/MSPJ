@@ -22,8 +22,6 @@
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Loading the gene expression data in *.csv
 
-library(meta)
-
 eset <- get(load("seq.matrix.RData"))
 
 
@@ -31,138 +29,203 @@ eset <- get(load("seq.matrix.RData"))
 ### Step-02. Setting the parameters used for re-sampling.
 
 # set.n: the times of resampling, or the number of sub-groups.   
-# size.min: the lower limit of sample size
-# size.max: the maximum sample size
+# size.min: the lower limit of sample size in each group.
+# size.max: the maximum sample size in each group. 
 # ord.gene: which gene you focused on. 
 
-set.n <- 40
-size.min <- 10
-size.max <- 20
-ord.gene <- 10
+#. set.n <- 40
+#. size.min <- 10
+#. size.max <- 20
+#. ord.gene <- 10
 
+### ------------------------------------------------------------------------ ###
+### Step-03. Generating multiple sub-groups based resampling for primary study. 
 
-sample.sets <- list()
-
-for (i in 1:set.n) {
+generateSubGroup <- function(dataset = eset, set.n = 40, size.min = 10, size.max = 20) {
   
-  sample.sets[[i]] <- eset[, sample(1:ncol(eset), sample(size.min:size.max, 1, replace = FALSE), 
-                                    replace = TRUE)]
+  if (!is.matrix(dataset)) {
+    
+    stop("Please input the propriate dataset!")
+    
+  }
+  
+  sample.sets <- list()
+  
+  for (i in 1:set.n) {
+    
+    sam.index <- sample(1:ncol(eset), 
+                        sample(size.min:size.max, 1, replace = FALSE), 
+                        replace = FALSE)
+    
+    if (length(grep("Experimental", colnames(eset[, sam.index]))) >= 3 & length(grep("Control", colnames(eset[, sam.index]))) >= 3) 
+      sample.sets[[i]] <- eset[, sam.index] else {
+        
+        sample.sets[[i]] <- NA
+        
+        next
+        
+      }  
+    
+  }
+  
+  
+  real.sample.sets <- sample.sets[!is.na(sample.sets)]
+  
+  names(real.sample.sets) <- paste("sampling_set", 1:length(real.sample.sets), sep = "-")
+  
+  return(real.sample.sets)
   
 }
 
-names(sample.sets) <- paste("sampling_set", 1:set.n, sep = "-")
+sample.sets <- generateSubGroup(eset, set.n = 40, size.min = 10, size.max = 20)
 
-
-
-
-
-
-
+# dim(subgroups[[5]])
 
 
 ### ------------------------------------------------------------------------ ###
-### Step-02. Computing the statistics used for meta-analysis.
+### Step-04. Computing the statistics used for meta-analysis.
 
-stat.mat <- data.frame(matrix(NA, set.n, 8))
+library(meta)
 
-names(stat.mat) <- c("study", "year", 
-                     "n.e", "mean.e", "sd.e", 
-                     "n.c", "mean.c", "sd.c")
+set.n <- length(sample.sets)
 
-stat.mat$study <- paste("sampling_set", 1:set.n, sep = "-")
+cutoff <- 0.5
 
-stat.mat$year <- sample(2000:2020, set.n, replace = TRUE)
+up.index <- NULL
 
-# x <- sample.sets[[1]]
+down.index <- NULL
 
-f.ne <- function(x) length(grep("Experimental", colnames(x)))
+for (ord.gene in 1:nrow(eset)) {
+  
+  # ord.gene <- 10
+  
+  stat.mat <- data.frame(matrix(NA, set.n, 8))
+  
+  names(stat.mat) <- c("study", "year", 
+                       "n.e", "mean.e", "sd.e", 
+                       "n.c", "mean.c", "sd.c")
+  
+  stat.mat$study <- paste("sampling_set", 1:set.n, sep = "-")
+  
+  stat.mat$year <- sample(2000:2020, set.n, replace = TRUE)
+  
+  # x <- sample.sets[[1]]
+  
+  f.ne <- function(x) length(grep("Experimental", colnames(x)))
+  
+  f.meane <- function(x) mean(x[ord.gene, grep("Experimental", colnames(x))])
+  
+  f.sde <- function(x) sd(x[ord.gene, grep("Experimental", colnames(x))])
+  
+  f.nc <- function(x) length(grep("Control", colnames(x)))
+  
+  f.meanc <- function(x) mean(x[ord.gene, grep("Control", colnames(x))])
+  
+  f.sdc <- function(x) sd(x[ord.gene, grep("Control", colnames(x))])
+  
+  stat.mat$n.e <- unlist(lapply(sample.sets, f.ne))
+  stat.mat$n.c <- unlist(lapply(sample.sets, f.nc))
+  
+  stat.mat$mean.e <- unlist(lapply(sample.sets, f.meane))
+  stat.mat$mean.c <- unlist(lapply(sample.sets, f.meanc))
+  
+  stat.mat$sd.e <- unlist(lapply(sample.sets, f.sde))
+  stat.mat$sd.c <- unlist(lapply(sample.sets, f.sdc))
+  
+  # DT::datatable(stat.mat)
+  
+  ### ------------------------------------------------------------------------ ###
+  ### Step-05. Implementation of meta-analysis for a specific gene (ord.gene).
+  
+  # Forest plot for a given gene (ord.gene). 
+  
+  res <- metacont(n.e, # Number of observations in experimental group
+                  mean.e, # Estimated mean in experimental group
+                  sd.e, # Standard deviation in experimental group
+                  n.c, # Number of observations in control group
+                  mean.c, # Estimated mean in control group
+                  sd.c, # Standard deviation in control group
+                  studlab = study, # An optional vector with study labels
+                  data = stat.mat, # Data frame containing the study information
+                  sm = "SMD")  # One of three measures ("MD", "SMD" and "ROM")
+  
+  forest(res, 
+         col.fix = "red", 
+         col.random = "blue",
+         col.study = "black",
+         col.square = "gray",
+         #. col.square.lines = col.square,
+         col.inside = "white",
+         col.diamond = "gray",
+         #. col.diamond.fixed = col.diamond,
+         #. col.diamond.random = col.diamond,
+         col.diamond.lines = "black",
+         #. col.diamond.lines.fixed = col.diamond.lines,
+         #. col.diamond.lines.random = col.diamond.lines,
+         #. col.inside.fixed = col.inside,
+         #. col.inside.random = col.inside,
+         col.predict = "red",
+         col.predict.lines = "black",
+         col.by = "darkgray",
+         col.label.right = "black",
+         col.label.left = "black")
+  
+  # Extracting the detail model parameters: 
+  
+  # - The SMD statistics in random effect model. 
+  
+  zTE.r <- res$TE.random # Estimated treatment effect (TE) and standard error of individual studies
+  lTE.r <- res$lower.random
+  uTE.r <- res$upper.random
+  
+  # - The SMD statistics in fixed effect model. 
+  
+  zTE.f <- res$TE.fixed # Estimated treatment effect (TE) and standard error of individual studies
+  lTE.f <- res$lower.fixed
+  uTE.f <- res$upper.fixed
+  
+  # - Heterogeneity statistic I2, requiring < 50%. 
+  Heter.I2 <- res$I2
+  Heter.p <- res$pval.Q
+  
+  # Finally, DEGs were identified by above indexes. 
+  
+  if (lTE.r > cutoff & lTE.f > cutoff) {
+    
+    up.index <- c(up.index, ord.gene)
+    
+    print("This gene was up-regulated!")
+    
+  } else 
+    
+    if (uTE.r < -cutoff & uTE.f < -cutoff) {
+      
+      down.index <- c(down.index, ord.gene)
+      
+      print("This gene was down-regulated!")
+      
+    } else 
+      
+      print("This gene was not changed at the confidence level with 0.05!")
+  
+  Sys.sleep(3)
+}
 
-f.meane <- function(x) apply(x[ord.gene, grep("Experimental", colnames(x))], 1, mean)
-
-f.sde <- function(x) apply(x[ord.gene, grep("Experimental", colnames(x))], 1, sd)
-
-f.nc <- function(x) length(grep("Control", colnames(x)))
-
-f.meanc <- function(x) apply(x[ord.gene, grep("Control", colnames(x))], 1, mean)
-
-f.sdc <- function(x) apply(x[ord.gene, grep("Control", colnames(x))], 1, sd)
-
-stat.mat$n.e <- unlist(lapply(sample.sets, f.ne))
-stat.mat$n.c <- unlist(lapply(sample.sets, f.nc))
-
-stat.mat$mean.e <- unlist(lapply(sample.sets, f.meane))
-stat.mat$mean.c <- unlist(lapply(sample.sets, f.meanc))
-
-stat.mat$sd.e <- unlist(lapply(sample.sets, f.sde))
-stat.mat$sd.c <- unlist(lapply(sample.sets, f.sdc))
 
 
 
+# Funnel plot for a given gene (ord.gene). 
 
-### ------------------------------------------------------------------------ ###
-### Step-01. Preparing the GEO accession number for GEO Series.
+col.seq <- rep(NA, ncol(eset))
 
-# load("Rimage_6.11.RData")
-
-# My Mac OS. 
-# setwd("/Users/libo/Test/Asthma/AsthmaData/")
-
-
-
-# data(Fleiss93cont)
-
-res <- metacont(n.e, # Number of observations in experimental group
-               mean.e, # Estimated mean in experimental group
-               sd.e, # Standard deviation in experimental group
-               n.c, # Number of observations in control group
-               mean.c, # Estimated mean in control group
-               sd.c, # Standard deviation in control group
-               studlab = study, # An optional vector with study labels
-               data = stat.mat, # Data frame containing the study information
-               sm = "SMD")  # One of three measures ("MD", "SMD" and "ROM")
-
-forest(res, 
-       col.fix = "red", 
-       col.random = "blue",
-       col.study = "black",
-       col.square = "gray",
-       #. col.square.lines = col.square,
-       col.inside = "white",
-       col.diamond = "gray",
-       #. col.diamond.fixed = col.diamond,
-       #. col.diamond.random = col.diamond,
-       col.diamond.lines = "black",
-       #. col.diamond.lines.fixed = col.diamond.lines,
-       #. col.diamond.lines.random = col.diamond.lines,
-       #. col.inside.fixed = col.inside,
-       #. col.inside.random = col.inside,
-       col.predict = "red",
-       col.predict.lines = "black",
-       col.by = "darkgray",
-       col.label.right = "black",
-       col.label.left = "black")
-
+col.seq[grep("Experimental", colnames(eset))] <- "red"
+col.seq[grep("Control", colnames(eset))] <- "green"
 
 funnel(res, 
-       pch = 24, 
-       col = 1:40, 
+       pch = "S", 
+       col = col.seq, 
        bg = 1:40)
 
-#. str(res)
-#. 
-#. if (res$overall.hetstat) {
-#.   
-#.   cat("The heterogeneity of this model is satisfactory")
-#.   
-#.   if (abs(res$TE.random) > 0.2  & abs(res$TE.fixed) > 0.2) {
-#.     
-#.     cat("\nThis gene is a differentially expressed gene")
-#.     
-#.     if (res$TE.random > 0.2) cat("\nState: up-regulated") else cat("\nState: down-regulated")
-#.   }  
-#.   
-#. }
-#. 
-#. 
-#. res$TE.random
+# End. 
+
 

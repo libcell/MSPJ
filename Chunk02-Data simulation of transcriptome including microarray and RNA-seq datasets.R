@@ -91,5 +91,7 @@ down.gene <- rownames(seq.matrix)[seq.varanno$downregulation == 1]
 
 dim(seq.matrix)
 
+save(seq.matrix, file = "seq.matrix.RData")
+
 ### End. 
 
