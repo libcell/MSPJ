@@ -23,7 +23,7 @@
 ### Step-01. Loading the gene expression data in *.csv
 
 eset <- get(load("seq.matrix.RData"))
-
+rm(seq.matrix)
 
 ### ------------------------------------------------------------------------ ###
 ### Step-02. Setting the parameters used for re-sampling.
@@ -194,9 +194,9 @@ for (ord.gene in 1:nrow(eset)) {
     
     up.index <- c(up.index, ord.gene)
     
-    up.imf <- paste("The gene", ord.gene, "was up-regulated!", sep = " ")
+    up.inf <- paste("The gene", ord.gene, "was up-regulated!", sep = " ")
     
-    print(up.imf)
+    print(up.inf)
     
   } else 
     
@@ -204,16 +204,18 @@ for (ord.gene in 1:nrow(eset)) {
       
       down.index <- c(down.index, ord.gene)
       
-      down.imf <- paste("The gene", ord.gene, "was down-regulated!", sep = " ")
+      down.inf <- paste("The gene", ord.gene, "was down-regulated!", sep = " ")
       
-      print(down.imf)
+      print(down.inf)
       
-    } else 
+    } else {
       
-      non.imf <- paste("The gene", ord.gene, "was not changed at the significant level with 0.05!", sep = " ")
-  
-      print(non.imf)
-  
+      non.inf <- paste("The gene", ord.gene, "was not changed at the significant level with 0.05!", sep = " ")
+      
+      print(non.inf)
+      
+    }
+      
   Sys.sleep(3)
 }
 
