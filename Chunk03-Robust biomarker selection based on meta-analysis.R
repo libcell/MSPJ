@@ -194,7 +194,9 @@ for (ord.gene in 1:nrow(eset)) {
     
     up.index <- c(up.index, ord.gene)
     
-    print("This gene was up-regulated!")
+    up.imf <- paste("The gene", ord.gene, "was up-regulated!", sep = " ")
+    
+    print(up.imf)
     
   } else 
     
@@ -202,16 +204,18 @@ for (ord.gene in 1:nrow(eset)) {
       
       down.index <- c(down.index, ord.gene)
       
-      print("This gene was down-regulated!")
+      down.imf <- paste("The gene", ord.gene, "was down-regulated!", sep = " ")
+      
+      print(down.imf)
       
     } else 
       
-      print("This gene was not changed at the confidence level with 0.05!")
+      non.imf <- paste("The gene", ord.gene, "was not changed at the significant level with 0.05!", sep = " ")
+  
+      print(non.imf)
   
   Sys.sleep(3)
 }
-
-
 
 
 # Funnel plot for a given gene (ord.gene). 
