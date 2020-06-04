@@ -10,7 +10,7 @@
 ################################################################################
 
 ### ****************************************************************************
-### code chunk number 04: .
+### code chunk number 05: .
 ### ****************************************************************************
 
 ### Title: A novel meta-analytical approach to improve identification of DEGs. 
@@ -33,216 +33,56 @@ rm(seq.matrix)
 # size.max: the maximum sample size in each group. 
 # ord.gene: which gene you focused on. 
 
-#. set.n <- 40
-#. size.min <- 10
-#. size.max <- 20
-#. ord.gene <- 10
+set.seed(12345)
+library(e1071)
+source('Chunk04-SVM-RFE implementation by johncolby.R')
+
+load("input.Rdata")
+
+# Take a look at the expected input structure
+dim(input)
+input[1:5, 1:5]
+
+# Basic usage: when k = 1, it was standard SVM-RFE; or, multiple SVM-RFE. 
+
+# halve.above - allowing you cut the features in half each round. 
+
+ranked.feat <- svmRFE(input, k = 10, halve.above = 100)
 
 ### ------------------------------------------------------------------------ ###
 ### Step-03. Generating multiple sub-groups based resampling for primary study. 
 
-generateSubGroup <- function(dataset = eset, set.n = 40, size.min = 10, size.max = 20) {
-  
-  if (!is.matrix(dataset)) {
-    
-    stop("Please input the propriate dataset!")
-    
-  }
-  
-  sample.sets <- list()
-  
-  for (i in 1:set.n) {
-    
-    sam.index <- sample(1:ncol(eset), 
-                        sample(size.min:size.max, 1, replace = FALSE), 
-                        replace = FALSE)
-    
-    if (length(grep("Experimental", colnames(eset[, sam.index]))) >= 3 & length(grep("Control", colnames(eset[, sam.index]))) >= 3) 
-      sample.sets[[i]] <- eset[, sam.index] else {
-        
-        sample.sets[[i]] <- NA
-        
-        next
-        
-      }  
-    
-  }
-  
-  
-  real.sample.sets <- sample.sets[!is.na(sample.sets)]
-  
-  names(real.sample.sets) <- paste("sampling_set", 1:length(real.sample.sets), sep = "-")
-  
-  return(real.sample.sets)
-  
-}
+# Set up cross validation
+nfold <- 10
+nrows <- nrow(input)
+folds <- rep(1:nfold, len=nrows)[sample(nrows)]
+folds
+folds <- lapply(1:nfold, function(x) which(folds == x))
+folds
 
-sample.sets <- generateSubGroup(eset, set.n = 40, size.min = 10, size.max = 20)
+# Perform feature ranking on all training sets
 
-# dim(subgroups[[5]])
+results <- lapply(folds, svmRFE.wrap, input, k = 10, halve.above = 100)
+length(results)
+results
 
+# Obtain top features across ALL folds
 
-### ------------------------------------------------------------------------ ###
-### Step-04. Computing the statistics used for meta-analysis.
+top.features <- WriteFeatures(results, input, save = FALSE)
+head(top.features)
 
-library(meta)
+# Estimate generalization error using a varying number of top features
 
-set.n <- length(sample.sets)
+featsweep <- lapply(1:5, FeatSweep.wrap, results, input)
+featsweep
 
-cutoff <- 0.5
+# Make plot
+no.info <- min(prop.table(table(input[,1])))
+errors  <- sapply(featsweep, function(x) ifelse(is.null(x), NA, x$error))
 
-na.index <- NULL
-
-up.index <- NULL
-
-down.index <- NULL
-
-for (ord.gene in 290:nrow(eset)) {
-  
-  # ord.gene <- 10
-  
-  stat.mat <- data.frame(matrix(NA, set.n, 8))
-  
-  names(stat.mat) <- c("study", "year", 
-                       "n.e", "mean.e", "sd.e", 
-                       "n.c", "mean.c", "sd.c")
-  
-  stat.mat$study <- paste("sampling_set", 1:set.n, sep = "-")
-  
-  stat.mat$year <- sample(2000:2020, set.n, replace = TRUE)
-  
-  # x <- sample.sets[[1]]
-  
-  f.ne <- function(x) length(grep("Experimental", colnames(x)))
-  
-  f.meane <- function(x) mean(x[ord.gene, grep("Experimental", colnames(x))])
-  
-  f.sde <- function(x) sd(x[ord.gene, grep("Experimental", colnames(x))])
-  
-  f.nc <- function(x) length(grep("Control", colnames(x)))
-  
-  f.meanc <- function(x) mean(x[ord.gene, grep("Control", colnames(x))])
-  
-  f.sdc <- function(x) sd(x[ord.gene, grep("Control", colnames(x))])
-  
-  stat.mat$n.e <- unlist(lapply(sample.sets, f.ne))
-  stat.mat$n.c <- unlist(lapply(sample.sets, f.nc))
-  
-  stat.mat$mean.e <- unlist(lapply(sample.sets, f.meane))
-  stat.mat$mean.c <- unlist(lapply(sample.sets, f.meanc))
-  
-  stat.mat$sd.e <- unlist(lapply(sample.sets, f.sde))
-  stat.mat$sd.c <- unlist(lapply(sample.sets, f.sdc))
-  
-  # DT::datatable(stat.mat)
-  
-  ### ------------------------------------------------------------------------ ###
-  ### Step-05. Implementation of meta-analysis for a specific gene (ord.gene).
-  
-  # Forest plot for a given gene (ord.gene). 
-  
-  res <- metacont(n.e, # Number of observations in experimental group
-                  mean.e, # Estimated mean in experimental group
-                  sd.e, # Standard deviation in experimental group
-                  n.c, # Number of observations in control group
-                  mean.c, # Estimated mean in control group
-                  sd.c, # Standard deviation in control group
-                  studlab = study, # An optional vector with study labels
-                  data = stat.mat, # Data frame containing the study information
-                  sm = "SMD")  # One of three measures ("MD", "SMD" and "ROM")
-  
-  forest(res, 
-         col.fix = "red", 
-         col.random = "blue",
-         col.study = "black",
-         col.square = "gray",
-         #. col.square.lines = col.square,
-         col.inside = "white",
-         col.diamond = "gray",
-         #. col.diamond.fixed = col.diamond,
-         #. col.diamond.random = col.diamond,
-         col.diamond.lines = "black",
-         #. col.diamond.lines.fixed = col.diamond.lines,
-         #. col.diamond.lines.random = col.diamond.lines,
-         #. col.inside.fixed = col.inside,
-         #. col.inside.random = col.inside,
-         col.predict = "red",
-         col.predict.lines = "black",
-         col.by = "darkgray",
-         col.label.right = "black",
-         col.label.left = "black")
-  
-  # Extracting the detail model parameters: 
-  
-  # - The SMD statistics in random effect model. 
-  
-  zTE.r <- res$TE.random # Estimated treatment effect (TE) and standard error of individual studies
-  lTE.r <- res$lower.random
-  uTE.r <- res$upper.random
-  
-  # - The SMD statistics in fixed effect model. 
-  
-  zTE.f <- res$TE.fixed # Estimated treatment effect (TE) and standard error of individual studies
-  lTE.f <- res$lower.fixed
-  uTE.f <- res$upper.fixed
-  
-  # - Heterogeneity statistic I2, requiring < 50%. 
-  Heter.I2 <- res$I2
-  Heter.p <- res$pval.Q
-  
-  # Finally, DEGs were identified by above indexes. 
-  
-  if (!is.na(lTE.r) & !is.na(lTE.f) & !is.na(uTE.r) & !is.na(uTE.f)) {
-    
-    if (lTE.r > cutoff & lTE.f > cutoff) {
-      
-      up.index <- c(up.index, ord.gene)
-      
-      up.inf <- paste("The gene", ord.gene, "was up-regulated!", sep = " ")
-      
-      print(up.inf)
-      
-    } else 
-      
-      if (uTE.r < -cutoff & uTE.f < -cutoff) {
-        
-        down.index <- c(down.index, ord.gene)
-        
-        down.inf <- paste("The gene", ord.gene, "was down-regulated!", sep = " ")
-        
-        print(down.inf)
-        
-      } else {
-        
-        non.inf <- paste("The gene", ord.gene, "was not changed at the significant level with 0.05!", sep = " ")
-        
-        print(non.inf)
-        
-      }
-    
-  } else {
-    
-    na.index <- c(na.index, ord.gene) ############
-    
-    next
-    
-  }
-  
-  Sys.sleep(3)
-}
-
-
-# Funnel plot for a given gene (ord.gene). 
-
-col.seq <- rep(NA, ncol(eset))
-
-col.seq[grep("Experimental", colnames(eset))] <- "red"
-col.seq[grep("Control", colnames(eset))] <- "green"
-
-funnel(res, 
-       pch = "S", 
-       col = col.seq, 
-       bg = 1:40)
+dev.new(width = 4, height = 4, bg = 'white')
+PlotErrors(errors, no.info=no.info)
+dev.off()
 
 # End. 
 
