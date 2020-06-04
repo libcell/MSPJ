@@ -20,7 +20,6 @@
 
 ### Step-01. Data simulation of DNA Microarray using madsim package.
 
-
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 
