@@ -81,7 +81,7 @@ no.info <- min(prop.table(table(input[,1])))
 errors  <- sapply(featsweep, function(x) ifelse(is.null(x), NA, x$error))
 
 dev.new(width = 4, height = 4, bg = 'white')
-PlotErrors(errors, no.info=no.info)
+PlotErrors(errors, no.info = no.info)
 dev.off()
 
 # End. 
