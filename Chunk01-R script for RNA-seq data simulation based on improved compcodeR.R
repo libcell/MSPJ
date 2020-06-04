@@ -20,6 +20,13 @@
 
 ### Step-01. Data simulation of DNA Microarray using madsim package.
 
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+if (!require("edgeR")) BiocManager::install("edgeR")
+if (!require("compcodeR")) BiocManager::install("compcodeR")
+
 library(edgeR)
 library(compcodeR)
 
