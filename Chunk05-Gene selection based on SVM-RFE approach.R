@@ -33,21 +33,32 @@ rm(seq.matrix)
 # size.max: the maximum sample size in each group. 
 # ord.gene: which gene you focused on. 
 
-set.seed(12345)
-library(e1071)
-source('Chunk04-SVM-RFE implementation by johncolby.R')
+sam.lab <- sapply(colnames(eset), function(x) strsplit(x, "-")[[1]][1])  
+names(sam.lab) <- NULL
 
-load("input.Rdata")
+eset.mat <- as.data.frame(t(eset))
+# eset.mat[1:9, 1:6]
+
+input <- cbind(sam.lab, eset.mat)
+
+input <- as.data.frame(input)
+
+
+set.seed(12)
+library(e1071)
+#. source('Chunk04-SVM-RFE implementation by johncolby.R')
+
+# load("input.Rdata")
 
 # Take a look at the expected input structure
 dim(input)
-input[1:5, 1:5]
+# input[1:5, 1:5]
 
 # Basic usage: when k = 1, it was standard SVM-RFE; or, multiple SVM-RFE. 
 
 # halve.above - allowing you cut the features in half each round. 
 
-ranked.feat <- svmRFE(input, k = 10, halve.above = 100)
+ranked.feat <- svmRFE(input, k = 1, halve.above = 100)
 
 ### ------------------------------------------------------------------------ ###
 ### Step-03. Generating multiple sub-groups based resampling for primary study. 
