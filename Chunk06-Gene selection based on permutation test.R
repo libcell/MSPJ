@@ -61,9 +61,11 @@ sum(dist > diff(by(y, tr, mean)))/2000  # one-tailed test
 
 # for coin package. 
 
-independence_test(y ~ tr, alternative = "greater")  # one-tailed
+# independence_test(y ~ tr, alternative = "greater")  # one-tailed
 
-independence_test(y ~ tr, alternative = "two.sided")  # two-tailed
+independence_test(g10000 ~ sam.lab, data = input)
+
+# independence_test(y ~ tr, alternative = "two.sided")  # two-tailed
 
 # End. 
 
