@@ -54,8 +54,23 @@ library(coin)
 # independence_test(y ~ tr, alternative = "greater")  # one-tailed
 # independence_test(y ~ tr, alternative = "two.sided")  # two-tailed
 
+library(FSA)
+
+Summarize(g10000 ~ sam.lab, data = input, digits = 3)
+
+boxplot(g10000 ~ sam.lab, data = input)
+
+
+# For permutation test of independence
+# For two groups as independent samples, 
+# and tests if there is a difference in values between the two groups.
+
 independence_test(g10000 ~ sam.lab, data = input)
 
+# For permutation test of symmetry. 
+# For two groups as having paired or repeated data, paired within Individual.
+
+symmetry_test(g10000 ~ sam.lab | Individual, data = input)
 
 # End. 
 
