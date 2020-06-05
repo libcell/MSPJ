@@ -37,27 +37,17 @@ if (!require("coin")) install.packages("coin")
 
 library(coin)
 
-
-factorial(20)
-
-
-set.seed(1)
-n <- 100
-tr <- rbinom(100, 1, 0.5)
-y <- 1 + tr + rnorm(n, 0, 3)
-
-diff(by(y, tr, mean))
-
-s <- sample(tr, length(tr), FALSE)
-diff(by(y, s, mean))
-
-dist <- replicate(2000, diff(by(sample(y, length(y), FALSE), sample(tr, length(tr), FALSE), mean)))
-
-hist(dist, xlim = c(-3, 3), col = "black", breaks = 100)
-
-abline(v = diff(by(y, tr, mean)), col = "blue", lwd = 2)
-
-sum(dist > diff(by(y, tr, mean)))/2000  # one-tailed test
+#. set.seed(1)
+#. n <- 100
+#. tr <- rbinom(100, 1, 0.5)
+#. y <- 1 + tr + rnorm(n, 0, 3)
+#. diff(by(y, tr, mean))
+#. s <- sample(tr, length(tr), FALSE)
+#. diff(by(y, s, mean))
+#. dist <- replicate(2000, diff(by(sample(y, length(y), FALSE), sample(tr, length(tr), FALSE), mean)))
+#. hist(dist, xlim = c(-3, 3), col = "black", breaks = 100)
+#. abline(v = diff(by(y, tr, mean)), col = "blue", lwd = 2)
+#. sum(dist > diff(by(y, tr, mean)))/2000  # one-tailed test
 
 # for coin package. 
 
