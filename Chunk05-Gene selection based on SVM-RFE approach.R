@@ -43,6 +43,8 @@ input <- cbind(sam.lab, eset.mat)
 
 input <- as.data.frame(input)
 
+input[1:10, 1:10]
+
 
 set.seed(12)
 library(e1071)
@@ -58,7 +60,7 @@ dim(input)
 
 # halve.above - allowing you cut the features in half each round. 
 
-ranked.feat <- svmRFE(input, k = 1, halve.above = 100)
+ranked.feat <- svmRFE(input[1:3000], k = 5, halve.above = 100)
 
 ### ------------------------------------------------------------------------ ###
 ### Step-03. Generating multiple sub-groups based resampling for primary study. 
