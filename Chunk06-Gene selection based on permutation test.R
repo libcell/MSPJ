@@ -94,3 +94,27 @@ for (g in all.genes) {
 #. getMethod("show","ScalarIndependenceTest")
 
 # End. 
+
+fc <- NULL
+p <- NULL
+for (i in 2:20001) {
+  
+  print(i)
+  x <- mean(input[, i][1:15])/mean(input[, i][16:25])
+  y <- t.test(input[, i][1:15], input[, i][16:25], paired = FALSE)
+  #print("++++++++++++++++++++++++++++++++++++++++")
+  
+  fc <- c(fc, x)
+  p <- c(p, y$p.value)
+  #Sys.sleep(3)
+}
+
+plot(fc, ylim = c(0.9, 1.1))
+
+table(((fc < 0.5 | fc > 2) & p < 0.05)[1:500])
+
+hist(p, breaks = 100)
+
+table(p[1:500] < 0.05)
+
+hist(input$g1, breaks = 10)
