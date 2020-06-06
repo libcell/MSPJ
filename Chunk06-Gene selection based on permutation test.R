@@ -24,6 +24,7 @@
 ### Step-01. Loading the gene expression data in *.csv
 
 eset <- get(load("seq.matrix.RData"))
+
 rm(seq.matrix)
 
 ### ------------------------------------------------------------------------ ###
