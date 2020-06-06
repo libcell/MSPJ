@@ -79,7 +79,7 @@ class(deg.per)
 
 getMethod("show","ScalarIndependenceTest")
 
-Z <- deg.per@statistic@teststatistic
+deg.Z <- deg.per@statistic@teststatistic
 
 deg.p <- deg.per@distribution@pvalue(deg.per@statistic@teststatistic)
 
