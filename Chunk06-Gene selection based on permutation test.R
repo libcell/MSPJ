@@ -75,7 +75,7 @@ for (g in all.genes) {
   # deg.Z <- deg.per@statistic@teststatistic
   deg.p <- deg.per@distribution@pvalue(deg.per@statistic@teststatistic)
   
-  if (!is.na(deg.p) & deg.p < 0.05) deg.count <- c(deg.count, g) else next
+  if (!is.na(deg.p) & deg.p < 0.01) deg.count <- c(deg.count, g) else next
   
 }
 
@@ -87,7 +87,6 @@ for (g in all.genes) {
 # For two groups as having paired or repeated data, paired within Individual.
 
 # deg.per <- symmetry_test(g10000 ~ sam.lab | Individual, data = input)
-
 
 #. class(deg.per)
 #. getMethod("show","ScalarIndependenceTest")
