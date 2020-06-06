@@ -75,7 +75,9 @@ for (g in all.genes) {
   # deg.Z <- deg.per@statistic@teststatistic
   deg.p <- deg.per@distribution@pvalue(deg.per@statistic@teststatistic)
   
-  if (!is.na(deg.p) & deg.p < 0.01) deg.count <- c(deg.count, g) else next
+  # This variable, deg.count, stores all the differentially expressed genes.
+  
+  if (!is.na(deg.p) & deg.p < 0.05) deg.count <- c(deg.count, g) else next
   
 }
 
