@@ -75,4 +75,11 @@ deg.per <- independence_test(g10000 ~ sam.lab, data = input)
 
 # End. 
 
+class(deg.per)
+
+getMethod("show","ScalarIndependenceTest")
+
+Z <- deg.per@statistic@teststatistic
+
+deg.p <- deg.per@distribution@pvalue(deg.per@statistic@teststatistic)
 
