@@ -57,29 +57,38 @@ library(coin)
 
 library(FSA)
 
-Summarize(g10000 ~ sam.lab, data = input, digits = 3)
+all.genes <- names(input)[-1]
 
-boxplot(g10000 ~ sam.lab, data = input)
+deg.count <- NULL
 
+for (g in all.genes) {
+  
+  tmp <- Summarize(get(g) ~ sam.lab, data = input, digits = 3)
+  
+  # print(tmp)
+  
+  # boxplot(get(g) ~ sam.lab, data = input)
+  
+  deg.per <- try(independence_test(get(g) ~ sam.lab, data = input), silent = FALSE)
+  
+  # deg.Z <- deg.per@statistic@teststatistic
+  deg.p <- deg.per@distribution@pvalue(deg.per@statistic@teststatistic)
+  
+  if (!is.na(deg.p) & deg.p < 0.05) deg.count <- c(deg.count, g) else next
+  
+}
 
 # For permutation test of independence
 # For two groups as independent samples, 
 # and tests if there is a difference in values between the two groups.
-
-deg.per <- independence_test(g10000 ~ sam.lab, data = input)
 
 # For permutation test of symmetry. 
 # For two groups as having paired or repeated data, paired within Individual.
 
 # deg.per <- symmetry_test(g10000 ~ sam.lab | Individual, data = input)
 
+
+#. class(deg.per)
+#. getMethod("show","ScalarIndependenceTest")
+
 # End. 
-
-class(deg.per)
-
-getMethod("show","ScalarIndependenceTest")
-
-deg.Z <- deg.per@statistic@teststatistic
-
-deg.p <- deg.per@distribution@pvalue(deg.per@statistic@teststatistic)
-
