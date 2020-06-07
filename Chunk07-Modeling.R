@@ -23,9 +23,9 @@
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Loading the gene expression data in *.csv
 
-eset <- get(load("seq.matrix.RData"))
+# eset <- get(load("seq.matrix.RData"))
 
-rm(seq.matrix)
+# rm(seq.matrix)
 
 ### ------------------------------------------------------------------------ ###
 ### Step-02. Setting the parameters used for re-sampling.
@@ -39,7 +39,7 @@ rm(seq.matrix)
 # Data Split
 # load the libraries
 library(caret)
-library(klaR)
+# library(klaR)
 # load the iris dataset
 data(iris)
 # define an 80%/20% train/test split of the dataset
