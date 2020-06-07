@@ -65,8 +65,11 @@ full.pred.table <- do.call(rbind, all.pred.tables)
 res.roc <- roc(full.pred.table$y.test, full.pred.table$y.pred)
 
 plot(res.roc, col = "red") 
+# lines(perf, col = "green")
 
 auc.value <- auc(res.roc)
+
+library(ROCR)
 
 
 
@@ -87,6 +90,9 @@ y_test <- data_test[, 5]
 predictions <- predict(model, x_test)
 # summarize results
 confusionMatrix(predictions$class, y_test)
+
+
+
 
 
 
