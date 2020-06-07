@@ -38,6 +38,40 @@
 
 # Data Split
 # load the libraries
+
+X = iris[1:100, names(iris) != "Species"]
+y = as.character(iris$Species)[1:100]
+
+folds <- 10
+
+test.fold <- split(sample(1:length(y)), 1:folds) #ignore warning
+
+all.pred.tables <-  lapply(1:folds, function(i) {
+  
+  test <- test.fold[[i]]
+  
+  Xtrain <- X[-test, ]
+  
+  ytrain <- as.factor(y[-test])
+  
+  sm <- svm(Xtrain, ytrain, cost = 1, prob = TRUE) # some tuning may be needed
+  
+  prob.benign <- attr(predict(sm, X[test,], prob = TRUE), "probabilities")[, 2]
+  
+  data.frame(ytest = y[test], ypred = prob.benign) # returning this
+  
+})
+
+full.pred.table <- do.call(rbind, all.pred.tables)
+
+res.roc <- roc(full.pred.table$ytest, full.pred.table$ypred)
+
+plot(res.roc, col = "red") 
+
+auc.value <- auc(res.roc)
+
+
+
 library(caret)
 # library(klaR)
 # load the iris dataset
