@@ -94,63 +94,6 @@ confusionMatrix(predictions$class, y_test)
 
 
 
-if (!require("coin")) install.packages("coin")
-
-library(coin)
-
-#. set.seed(1)
-#. n <- 100
-#. tr <- rbinom(100, 1, 0.5)
-#. y <- 1 + tr + rnorm(n, 0, 3)
-#. diff(by(y, tr, mean))
-#. s <- sample(tr, length(tr), FALSE)
-#. diff(by(y, s, mean))
-#. dist <- replicate(2000, diff(by(sample(y, length(y), FALSE), sample(tr, length(tr), FALSE), mean)))
-#. hist(dist, xlim = c(-3, 3), col = "black", breaks = 100)
-#. abline(v = diff(by(y, tr, mean)), col = "blue", lwd = 2)
-#. sum(dist > diff(by(y, tr, mean)))/2000  # one-tailed test
-
-# for coin package. 
-
-# independence_test(y ~ tr, alternative = "greater")  # one-tailed
-# independence_test(y ~ tr, alternative = "two.sided")  # two-tailed
-
-library(FSA)
-
-all.genes <- names(input)[-1]
-
-deg.count <- NULL
-
-for (g in all.genes) {
-  
-  tmp <- Summarize(get(g) ~ sam.lab, data = input, digits = 3)
-  
-  # print(tmp)
-  
-  # boxplot(get(g) ~ sam.lab, data = input)
-  
-  deg.per <- try(independence_test(get(g) ~ sam.lab, data = input), silent = FALSE)
-  
-  # deg.Z <- deg.per@statistic@teststatistic
-  deg.p <- deg.per@distribution@pvalue(deg.per@statistic@teststatistic)
-  
-  # This variable, deg.count, stores all the differentially expressed genes.
-  
-  if (!is.na(deg.p) & deg.p < 0.05) deg.count <- c(deg.count, g) else next
-  
-}
-
-# For permutation test of independence
-# For two groups as independent samples, 
-# and tests if there is a difference in values between the two groups.
-
-# For permutation test of symmetry. 
-# For two groups as having paired or repeated data, paired within Individual.
-
-# deg.per <- symmetry_test(g10000 ~ sam.lab | Individual, data = input)
-
-#. class(deg.per)
-#. getMethod("show","ScalarIndependenceTest")
 
 # End. 
 
