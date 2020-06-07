@@ -28,43 +28,41 @@
 # rm(seq.matrix)
 
 ### ------------------------------------------------------------------------ ###
-### Step-02. Setting the parameters used for re-sampling.
+### Step-02. Constructing the models based on SVM algorithm. 
 
-# set.n: the times of resampling, or the number of sub-groups.   
-# size.min: the lower limit of sample size in each group.
-# size.max: the maximum sample size in each group. 
-# ord.gene: which gene you focused on. 
+# Using the testing dataset, iris. 
 
+X <- iris[1:99, names(iris) != "Species"]
 
-# Data Split
-# load the libraries
+y <-  as.character(iris$Species)[1:99]
 
-X = iris[1:100, names(iris) != "Species"]
-y = as.character(iris$Species)[1:100]
+# please select the fold number, for k-fold CV. 
 
 folds <- 10
 
-test.fold <- split(sample(1:length(y)), 1:folds) #ignore warning
+test.fold <- split(sample(1:length(y)), 1:folds) # ignore warning
 
-all.pred.tables <-  lapply(1:folds, function(i) {
+all.pred.tables <- lapply(1:folds, function(i) {
   
-  test <- test.fold[[i]]
+  test.id <- test.fold[[i]]
   
-  Xtrain <- X[-test, ]
+  X.train <- X[-test.id, ]
   
-  ytrain <- as.factor(y[-test])
+  y.train <- as.factor(y[-test.id])
   
-  sm <- svm(Xtrain, ytrain, cost = 1, prob = TRUE) # some tuning may be needed
+  model <- svm(X.train, y.train, kernel = "radial", prob = TRUE) # some tuning may be needed
   
-  prob.benign <- attr(predict(sm, X[test,], prob = TRUE), "probabilities")[, 2]
+  predict.test <- predict(model, X[test.id, ], prob = TRUE)
   
-  data.frame(ytest = y[test], ypred = prob.benign) # returning this
+  prob.benign <- attr(predict.test, "probabilities")[, 2]
+  
+  data.frame(y.test = y[test.id], y.pred = prob.benign) # returning this
   
 })
 
 full.pred.table <- do.call(rbind, all.pred.tables)
 
-res.roc <- roc(full.pred.table$ytest, full.pred.table$ypred)
+res.roc <- roc(full.pred.table$y.test, full.pred.table$y.pred)
 
 plot(res.roc, col = "red") 
 
