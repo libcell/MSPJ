@@ -68,7 +68,7 @@ model
 
 
 ### ------------------------------------------------------------------------ ###
-### Step-02. Constructing the models based on SVM algorithm. 
+### Step-03. Constructing the SVM models and validation with nested k-fold CV. 
 
 # Using the testing dataset, iris. 
 
