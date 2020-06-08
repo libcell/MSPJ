@@ -50,7 +50,7 @@ all.pred.tables <- lapply(1:folds, function(i) {
   
   y.train <- as.factor(y[-test.id])
   
-  model <- svm(X.train, y.train, kernel = "radial", prob = TRUE) # some tuning may be needed
+  model <- svm(X.train, y.train, kernel = "radial", prob = TRUE, cross = 0) # some tuning may be needed
   
   predict.test <- predict(model, X[test.id, ], prob = TRUE)
   
@@ -88,8 +88,8 @@ model <- NaiveBayes(Species~., data=data_train)
 x_test <- data_test[, 1:4]
 y_test <- data_test[, 5]
 predictions <- predict(model, x_test)
-# summarize results
-confusionMatrix(predictions$class, y_test)
+#  summarize results
+x <- confusionMatrix(predictions$class, y_test)
 
 
 
