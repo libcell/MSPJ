@@ -75,13 +75,13 @@ folds
 
 # Perform feature ranking on all training sets
 
-results <- lapply(folds, svmRFE.wrap, input, k = 10, halve.above = 100)
+results <- lapply(folds, svmRFE.wrap, input[, 1:2000], k = 10, halve.above = 100)
 length(results)
 results
 
 # Obtain top features across ALL folds
 
-top.features <- WriteFeatures(results, input, save = FALSE)
+top.features <- WriteFeatures(results, input[, 1:2000], save = FALSE)
 head(top.features)
 
 # Estimate generalization error using a varying number of top features

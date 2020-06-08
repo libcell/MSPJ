@@ -32,7 +32,7 @@ svmRFE.wrap <- function(test.fold, X, ...) {
   return(list(feature.ids=features.ranked, train.data.ids=row.names(train.data), test.data.ids=row.names(test.data)))
 }
 
-svmRFE <- function(X, k=1, halve.above=5000) {
+svmRFE <- function(X, k = 1, halve.above = 5000) {
   # Feature selection with Multiple SVM Recursive Feature Elimination (RFE) algorithm
   n = ncol(X) - 1
   
