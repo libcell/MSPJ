@@ -60,7 +60,7 @@ dim(input)
 
 # halve.above - allowing you cut the features in half each round. 
 
-ranked.feat <- svmRFE(input[1:3000], k = 5, halve.above = 100)
+ranked.feat <- svmRFE(input[, 1:2000], k = 5, halve.above = 100)
 
 ### ------------------------------------------------------------------------ ###
 ### Step-03. Generating multiple sub-groups based resampling for primary study. 
@@ -96,6 +96,10 @@ errors  <- sapply(featsweep, function(x) ifelse(is.null(x), NA, x$error))
 dev.new(width = 4, height = 4, bg = 'white')
 PlotErrors(errors, no.info = no.info)
 dev.off()
+
+
+
+
 
 # End. 
 
