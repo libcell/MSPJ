@@ -70,8 +70,6 @@ model
 ### ------------------------------------------------------------------------ ###
 ### Step-03. Constructing the SVM models and validation with nested k-fold CV. 
 
-# Using the testing dataset, iris. 
-
 X <- sam.iris[, names(sam.iris) != "sam.lab"]
 
 y <- as.character(sam.iris$sam.lab)
