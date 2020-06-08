@@ -111,48 +111,12 @@ auc.value
 
 
 
-library(caret)
 
-# load the iris dataset
-
-# define an 80%/20% train/test split of the dataset
-
-split <- 0.80
-
-trainIndex <- createDataPartition(iris$Species, p = split, list = FALSE)
-
-data_train <- iris[trainIndex, ]
-
-data_test <- iris[-trainIndex, ]
-
-# train a naive bayes model
-
-model <- NaiveBayes(Species~., data=data_train)
-
-# make predictions
-
-x_test <- data_test[, 1:4]
-
-y_test <- data_test[, 5]
-
-predictions <- predict(model, x_test)
-
-#  summarize results
-
-x <- confusionMatrix(predictions$class, y_test)
 
 
 # ---------------------------------------------------------------------------- #
 
-
-
-
-
-
-
-
 library(ROCR)
-
 
 test.id <- sample(1:25, 13, replace = FALSE)
 
@@ -163,7 +127,6 @@ training.y <- y[-test.id]
 
 test.X <- X[test.id, ]
 test.y <- y[test.id]
-
 
 model2 <- svm(x = training.X, 
               y = training.y, 
@@ -191,7 +154,6 @@ model3 <- svm(x = training.X,
               cross = 3)
 
 model3$accuracies
-
 
 predict.y1 <- predict(object = model2, newdata = test.X, probability = TRUE)
 predict.y2 <- predict(object = model5, newdata = test.X, probability = TRUE)
