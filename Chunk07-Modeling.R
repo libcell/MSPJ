@@ -91,10 +91,78 @@ predictions <- predict(model, x_test)
 #  summarize results
 x <- confusionMatrix(predictions$class, y_test)
 
+# ---------------------------------------------------------------------------- #
+
+plot(1:1000, ylim = c(1, 25), type = "n")
+
+for (i in 1:1000) {
+  
+  sam.iris <- input[, c(1, ranked.feat[1:i] + 1)]
+  
+  model <- svm(sam.lab ~ ., 
+               data = sam.iris, 
+               kernel = "radial", 
+               type = "C-classification", 
+               probability = TRUE, 
+               cross = 5)
+  
+  print(sum(model$nSV))
+  
+  points(i, sum(model$nSV), col = "red")
+  
+  Sys.sleep(3)
+}
+
+
+
+model
+
+test.id <- sample(1:25, 13, replace = FALSE)
+
+str(model)
+
+training.X <- X[-test.id, ]
+training.y <- y[-test.id]
+
+test.X <- X[test.id, ]
+test.y <- y[test.id]
+
+
+model2 <- svm(x = training.X, 
+              y = training.y, 
+              kernel = "radial", 
+              type = "C-classification", 
+              probability = TRUE, 
+              cross = 2)
+
+model2$accuracies
+
+model5 <- svm(x = training.X, 
+              y = training.y, 
+              kernel = "radial", 
+              type = "C-classification", 
+              probability = TRUE, 
+              cross = 5)
+
+model5$accuracies
+
+model3 <- svm(x = training.X, 
+              y = training.y, 
+              kernel = "radial", 
+              type = "C-classification", 
+              probability = TRUE, 
+              cross = 3)
+
+model3$accuracies
 
 
 
 
+predict.y1 <- predict(object = model2, newdata = test.X, probability = TRUE)
+predict.y2 <- predict(object = model5, newdata = test.X, probability = TRUE)
+
+table(predict.y1, test.y)
+table(predict.y2, test.y)
 
 # End. 
 
