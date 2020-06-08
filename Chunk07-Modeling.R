@@ -93,7 +93,9 @@ x <- confusionMatrix(predictions$class, y_test)
 
 # ---------------------------------------------------------------------------- #
 
-plot(1:1000, ylim = c(1, 25), type = "n")
+plot(1:1000, ylim = c(1, 25), type = "n", 
+     xlab = "Number of Differentially Expressed Genes", 
+     ylab = "Number of Support Vectors")
 
 for (i in 1:1000) {
   
@@ -108,12 +110,10 @@ for (i in 1:1000) {
   
   print(sum(model$nSV))
   
-  points(i, sum(model$nSV), col = "red")
+  points(i, sum(model$nSV), col = rainbow(1000)[i], pch = 20)
   
-  Sys.sleep(3)
+  Sys.sleep(1)
 }
-
-
 
 model
 
