@@ -64,9 +64,6 @@ for (i in 1:top.n) {
   Sys.sleep(1)
 }
 
-model
-
-
 ### ------------------------------------------------------------------------ ###
 ### Step-03. Constructing the SVM models and validation with nested k-fold CV. 
 
