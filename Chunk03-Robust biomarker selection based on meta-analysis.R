@@ -25,9 +25,10 @@
 # seq.matrix.RData - simulated RNA-seq data; 
 # mcr.matrix.RData - simulated microarray data. 
 
-eset <- get(load("seq.matrix.RData"))
+eset <- get(load("mcr.matrix.RData")); rm(mcr.matrix)
+eset <- get(load("seq.matrix.RData")); rm(seq.matrix)
 
-rm(seq.matrix)
+DT::datatable(eset)
 
 ### ------------------------------------------------------------------------ ###
 ### Step-02. Setting the parameters used for re-sampling.
@@ -45,7 +46,10 @@ rm(seq.matrix)
 ### ------------------------------------------------------------------------ ###
 ### Step-03. Generating multiple sub-groups based resampling for primary study. 
 
-generateSubGroup <- function(dataset = eset, set.n = 40, size.min = 10, size.max = 20) {
+generateSubGroup <- function(dataset = eset, 
+                             set.n = 40, 
+                             size.min = 10, 
+                             size.max = 20) {
   
   if (!is.matrix(dataset)) {
     
@@ -71,7 +75,6 @@ generateSubGroup <- function(dataset = eset, set.n = 40, size.min = 10, size.max
       }  
     
   }
-  
   
   real.sample.sets <- sample.sets[!is.na(sample.sets)]
   

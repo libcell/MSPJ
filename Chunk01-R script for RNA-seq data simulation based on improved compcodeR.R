@@ -31,7 +31,98 @@ if (!require("compcodeR")) BiocManager::install("compcodeR")
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Step-02. Defined the function generateSyntheticData.yhc (for RNA-seq data simulation)
+### Function-01. Defined the function madsim.yhc (for microarray data simulation) 
+
+madsim.yhc <- function (mdata = NULL, 
+                        n = 10000, 
+                        ratio = 0, 
+                        fparams = data.frame(m1 = 7, 
+                                             m2 = 7, 
+                                             shape2 = 4, 
+                                             lb = 4, 
+                                             ub = 14, 
+                                             pde = 0.02, 
+                                             sym = 0.5), 
+                        dparams = data.frame(lambda1 = 0.13, 
+                                             lambda2 = 2, 
+                                             muminde = 1, 
+                                             sdde = 0.5), 
+                        sdn = 0.4, 
+                        rseed = 50) {
+  set.seed(rseed)
+  m1 <- fparams$m1
+  m2 <- fparams$m2
+  m <- m1 + m2 + 1
+  n1 <- length(mdata)
+  if (n < 100) 
+    n <- 100
+  if (n1 > 100) {
+    if (n == 0) {
+      n <- n1
+      x2 <- mdata
+    }
+    else {
+      if (n < n1) {
+        x2 <- sample(mdata, n, replace = FALSE)
+      }
+      else {
+        x2 <- sample(mdata, n, replace = TRUE)
+      }
+    }
+  }
+  else {
+    x <- rbeta(n, 2, fparams$shape2)
+    x2 <- fparams$lb + (fparams$ub * x)
+  }
+  xdat <- matrix(c(rep(0, n * m)), ncol = m)
+  xid <- matrix(c(rep(0, n)), ncol = 1)
+  for (i in 1:n) {
+    alpha <- dparams$lambda1 * exp(-dparams$lambda1 * x2[i])
+    xi_val <- runif(m, min = (1 - alpha) * x2[i], max = (1 + 
+                                                           alpha) * x2[i])
+    if (sample(1:1000, 1) > (1000 * fparams$pde)) {
+      xdat[i, ] <- xi_val
+    }
+    else {
+      xi1 <- xi_val[1:(m1 + 1)]
+      mude <- dparams$muminde + rexp(1, dparams$lambda2)
+      if (sample(1:1000, 1) > (1000 * fparams$sym)) {
+        xi2 <- xi_val[(m1 + 2):m] + rnorm(m2, mean = mude, 
+                                          sd = dparams$sdde)
+        xid[i] <- 1
+      }
+      else {
+        xi2 <- xi_val[(m1 + 2):m] - rnorm(m2, mean = mude, 
+                                          sd = dparams$sdde)
+        xid[i] <- -1
+      }
+      xdat[i, ] <- c(xi1, xi2)
+    }
+  }
+  cont <- paste("Control", 1:m1, sep = "-")
+  test <- paste("Experimental", 1:m2, sep = "-")
+  colnames(xdat) <- c("V1", cont, test)
+  xsd <- sd(xdat[, 1])
+  if (sdn > 0) {
+    ndat <- matrix(c(rnorm(n * m, mean = 0, sd = sdn)), ncol = m)
+    xdat <- xdat + ndat
+  }
+  xdata <- matrix(c(rep(0, n * (m - 1))), ncol = (m - 1))
+  if (ratio) {
+    xdata <- xdat[, 2:m] - xdat[, 1]
+  }
+  else {
+    xdata <- xdat[, 2:m]
+  }
+  list(xdata = xdata, xid = xid, xsd = xsd)
+}
+
+### End of Function-01. 
+### ------------------------------------------------------------------------ ###
+
+
+### ------------------------------------------------------------------------ ###
+### Function-02. Defined the function generateSyntheticData.yhc (for RNA-seq data simulation)
 
 library(edgeR)
 library(compcodeR)
@@ -265,29 +356,20 @@ generateSyntheticData.yhc <- function(dataset,
     Z <- round(single.outliers.factor * Z)
   }
   rownames(Z) <- 1:n.vars
-  n.random.outliers.up.S1 <- apply(random.outliers[, S1] > 
-                                     0, 1, sum)
-  n.random.outliers.up.S2 <- apply(random.outliers[, S2] > 
-                                     0, 1, sum)
-  n.random.outliers.down.S1 <- apply(random.outliers[, S1] < 
-                                       0, 1, sum)
-  n.random.outliers.down.S2 <- apply(random.outliers[, S2] < 
-                                       0, 1, sum)
-  n.single.outliers.up.S1 <- apply(single.outliers[, S1] > 
-                                     0, 1, sum)
-  n.single.outliers.up.S2 <- apply(single.outliers[, S2] > 
-                                     0, 1, sum)
-  n.single.outliers.down.S1 <- apply(single.outliers[, S1] < 
-                                       0, 1, sum)
-  n.single.outliers.down.S2 <- apply(single.outliers[, S2] < 
-                                       0, 1, sum)
+  n.random.outliers.up.S1 <- apply(random.outliers[, S1] > 0, 1, sum)
+  n.random.outliers.up.S2 <- apply(random.outliers[, S2] > 0, 1, sum)
+  n.random.outliers.down.S1 <- apply(random.outliers[, S1] < 0, 1, sum)
+  n.random.outliers.down.S2 <- apply(random.outliers[, S2] < 0, 1, sum)
+  n.single.outliers.up.S1 <- apply(single.outliers[, S1] > 0, 1, sum)
+  n.single.outliers.up.S2 <- apply(single.outliers[, S2] > 0, 1, sum)
+  n.single.outliers.down.S1 <- apply(single.outliers[, S1] < 0, 1, sum)
+  n.single.outliers.down.S2 <- apply(single.outliers[, S2] < 0, 1, sum)
   nf <- calcNormFactors(Z)
   norm.factors <- nf * colSums(Z)
   common.libsize <- exp(mean(log(colSums(Z))))
   pseudocounts <- sweep(Z + 0.5, 2, norm.factors, "/") * common.libsize
   log2.pseudocounts <- log2(pseudocounts)
-  M.value <- apply(log2.pseudocounts[, S2], 1, mean) - apply(log2.pseudocounts[, 
-                                                                               S1], 1, mean)
+  M.value <- apply(log2.pseudocounts[, S2], 1, mean) - apply(log2.pseudocounts[, S1], 1, mean)
   A.value <- 0.5 * (apply(log2.pseudocounts[, S2], 1, mean) + 
                       apply(log2.pseudocounts[, S1], 1, mean))
   variable.annotations <- data.frame(truedispersions.S1 = truedispersions.S1, 
@@ -342,7 +424,56 @@ generateSyntheticData.yhc <- function(dataset,
   
 }
 
-### End of Step-02. 
+### End of Function-02. 
+### ------------------------------------------------------------------------ ###
+
+
+### ------------------------------------------------------------------------ ###
+### Function-03. Define the function to generate multiple sub-groups from primary study. 
+
+generateSubGroup <- function(dataset = eset, 
+                             set.n = 40, 
+                             size.min = 10, 
+                             size.max = 20) {
+  
+  if (!is.matrix(dataset)) {
+    
+    stop("Please input the propriate dataset!")
+    
+  }
+  
+  sample.sets <- list()
+  
+  for (i in 1:set.n) {
+    
+    sam.index <- sample(1:ncol(eset), 
+                        sample(size.min:size.max, 1, replace = FALSE), 
+                        replace = FALSE)
+    
+    if (length(grep("Experimental", colnames(eset[, sam.index]))) >= 3 & length(grep("Control", colnames(eset[, sam.index]))) >= 3) 
+      sample.sets[[i]] <- eset[, sam.index] else {
+        
+        sample.sets[[i]] <- NA
+        
+        next
+        
+      }  
+    
+  }
+  
+  real.sample.sets <- sample.sets[!is.na(sample.sets)]
+  
+  names(real.sample.sets) <- paste("sampling_set", 1:length(real.sample.sets), sep = "-")
+  
+  return(real.sample.sets)
+  
+}
+
+sample.sets <- generateSubGroup(eset, set.n = 40, size.min = 10, size.max = 20)
+
+# dim(subgroups[[5]])
+
+### End of Function-03. 
 ### ------------------------------------------------------------------------ ###
 
 
