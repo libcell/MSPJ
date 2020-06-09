@@ -10,7 +10,7 @@
 ################################################################################
 
 ### ****************************************************************************
-### code chunk number 01: Data simulation of transcriptome.
+### code chunk number 02: Data simulation of transcriptome.
 ### ****************************************************************************
 
 # - R package: madsim, compcodeR, and LIMMA. 
@@ -18,6 +18,7 @@
 # For windows, work directory. 
 # setwd("F:/")
 
+### ------------------------------------------------------------------------ ###
 ### Step-01. Data simulation of DNA Microarray using madsim package.
 
 library(madsim)
@@ -56,6 +57,8 @@ rownames(mcr.matrix) <- paste("gene", 1:nrow(mcr.matrix), sep = "-")
 
 table(mcr.data$xid)
 
+### End of Step-01.
+### ------------------------------------------------------------------------ ###
 
 ### Step-02. Data simulation of RNA-sequencing using compcodeR package.
 
