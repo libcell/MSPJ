@@ -60,6 +60,8 @@ table(mcr.data$xid)
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
 
+
+### ------------------------------------------------------------------------ ###
 ### Step-02. Data simulation of RNA-sequencing using compcodeR package.
 
 # Warnning: you must run the module chunk01 before this step. 
