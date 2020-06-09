@@ -18,7 +18,8 @@
 # Setting the work directory, for windows. 
 # setwd("F:/")
 
-### Step-01. Data simulation of DNA Microarray using madsim package.
+### Function generateSyntheticData.yhc
+### -- an improved R function for RNA-seq data simulation.
 
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
