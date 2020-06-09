@@ -18,14 +18,20 @@
 # Setting the work directory, for windows. 
 # setwd("F:/")
 
-### Function generateSyntheticData.yhc
-### -- an improved R function for RNA-seq data simulation.
+### ------------------------------------------------------------------------ ###
+### Step-01. Install all R packages required in this step. 
 
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 
 if (!require("edgeR")) BiocManager::install("edgeR")
 if (!require("compcodeR")) BiocManager::install("compcodeR")
+
+### End of Step-01. 
+### ------------------------------------------------------------------------ ###
+
+### ------------------------------------------------------------------------ ###
+### Step-02. Defined the function generateSyntheticData.yhc (for RNA-seq data simulation)
 
 library(edgeR)
 library(compcodeR)
@@ -336,6 +342,7 @@ generateSyntheticData.yhc <- function(dataset,
   
 }
 
-### End. 
+### End of Step-02. 
+### ------------------------------------------------------------------------ ###
 
 
