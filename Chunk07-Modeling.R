@@ -31,7 +31,7 @@ eset.mat <- as.data.frame(t(eset))
 
 input <- as.data.frame(cbind(sam.lab, eset.mat))
 
-input[1:10, 1:10]
+# input[1:10, 1:10]
 
 ### ------------------------------------------------------------------------ ###
 ### Step-02. training the SVM models using k-fold Cross-Validation (inner loop). 
