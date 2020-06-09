@@ -40,7 +40,7 @@ sdn <- 0.4 # normal distribution standard deviation for additive noise
 
 rseed <- 50 # computer random number initialization
 
-mcr.data <- madsim(mdata = NULL, 
+mcr.data <- madsim.yhc(mdata = NULL, 
                    n = 20000, 
                    ratio = 0, 
                    fparams, 
