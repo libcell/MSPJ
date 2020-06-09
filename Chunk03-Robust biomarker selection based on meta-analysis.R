@@ -30,6 +30,9 @@ eset <- get(load("seq.matrix.RData")); rm(seq.matrix)
 
 DT::datatable(eset)
 
+### End of Step-01.
+### ------------------------------------------------------------------------ ###
+
 ### ------------------------------------------------------------------------ ###
 ### Step-02. Setting the parameters used for re-sampling.
 
@@ -46,48 +49,12 @@ DT::datatable(eset)
 ### ------------------------------------------------------------------------ ###
 ### Step-03. Generating multiple sub-groups based resampling for primary study. 
 
-generateSubGroup <- function(dataset = eset, 
-                             set.n = 40, 
-                             size.min = 10, 
-                             size.max = 20) {
-  
-  if (!is.matrix(dataset)) {
-    
-    stop("Please input the propriate dataset!")
-    
-  }
-  
-  sample.sets <- list()
-  
-  for (i in 1:set.n) {
-    
-    sam.index <- sample(1:ncol(eset), 
-                        sample(size.min:size.max, 1, replace = FALSE), 
-                        replace = FALSE)
-    
-    if (length(grep("Experimental", colnames(eset[, sam.index]))) >= 3 & length(grep("Control", colnames(eset[, sam.index]))) >= 3) 
-      sample.sets[[i]] <- eset[, sam.index] else {
-        
-        sample.sets[[i]] <- NA
-        
-        next
-        
-      }  
-    
-  }
-  
-  real.sample.sets <- sample.sets[!is.na(sample.sets)]
-  
-  names(real.sample.sets) <- paste("sampling_set", 1:length(real.sample.sets), sep = "-")
-  
-  return(real.sample.sets)
-  
-}
-
 sample.sets <- generateSubGroup(eset, set.n = 40, size.min = 10, size.max = 20)
 
 # dim(subgroups[[5]])
 
+### End of Step-03.
+### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
 ### Step-04. Computing the statistics used for meta-analysis.

@@ -469,8 +469,6 @@ generateSubGroup <- function(dataset = eset,
   
 }
 
-sample.sets <- generateSubGroup(eset, set.n = 40, size.min = 10, size.max = 20)
-
 # dim(subgroups[[5]])
 
 ### End of Function-03. 
