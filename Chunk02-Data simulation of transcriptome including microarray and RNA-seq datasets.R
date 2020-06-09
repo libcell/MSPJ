@@ -51,11 +51,14 @@ mcr.data <- madsim(mdata = NULL,
 # DNA microarray dataset simulated in this study.
 
 mcr.matrix <- mcr.data$xdata
-rownames(mcr.matrix) <- paste("gene", 1:nrow(mcr.matrix), sep = "-")
+dim(mcr.matrix)
+rownames(mcr.matrix) <- paste0("g", 1:nrow(mcr.matrix))
 
 # checking the up- and down-regulated genes in mcr.matrix. 
 
 table(mcr.data$xid)
+
+save(mcr.matrix, file = "mcr.matrix.RData")
 
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
@@ -65,10 +68,9 @@ table(mcr.data$xid)
 ### Step-02. Data simulation of RNA-sequencing using compcodeR package.
 
 # Warnning: you must run the module chunk01 before this step. 
+# tmpdir <- normalizePath(tempdir(), winslash = "/")
 
 library(compcodeR)
-
-# tmpdir <- normalizePath(tempdir(), winslash = "/")
 
 seqdata.obj <- generateSyntheticData.yhc(dataset = "seq.data", 
                                          n.vars = 20000, # the number of genes
@@ -78,7 +80,7 @@ seqdata.obj <- generateSyntheticData.yhc(dataset = "seq.data",
                                          fraction.upregulated = 0.5,
                                          output.file = "seqdata.rds")
 
-# extracting the gene expression matrix. 
+# Extracting the gene expression matrix. 
 
 seq.matrix <- seqdata.obj@count.matrix
 
@@ -98,5 +100,5 @@ dim(seq.matrix)
 
 save(seq.matrix, file = "seq.matrix.RData")
 
-### End. 
-
+### End of Step-02. 
+### ------------------------------------------------------------------------ ###
