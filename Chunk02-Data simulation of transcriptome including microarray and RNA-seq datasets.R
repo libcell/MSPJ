@@ -56,6 +56,9 @@ rownames(mcr.matrix) <- paste0("g", 1:nrow(mcr.matrix))
 
 # checking the up- and down-regulated genes in mcr.matrix. 
 
+up.id <- which(mcr.data$xid == 1)
+down.id <- which(mcr.data$xid == -1)
+
 table(mcr.data$xid)
 
 save(mcr.matrix, file = "mcr.matrix.RData")

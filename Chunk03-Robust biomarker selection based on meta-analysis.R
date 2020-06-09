@@ -25,10 +25,12 @@
 # seq.matrix.RData - simulated RNA-seq data; 
 # mcr.matrix.RData - simulated microarray data. 
 
-eset <- get(load("mcr.matrix.RData")); rm(mcr.matrix)
-eset <- get(load("seq.matrix.RData")); rm(seq.matrix)
+# Taking the microarray data as example. 
 
-DT::datatable(eset)
+eset <- get(load("mcr.matrix.RData")); rm(mcr.matrix)
+# eset <- get(load("seq.matrix.RData")); rm(seq.matrix)
+
+# DT::datatable(eset)
 
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
@@ -71,7 +73,7 @@ up.index <- NULL
 
 down.index <- NULL
 
-for (ord.gene in 290:nrow(eset)) {
+for (ord.gene in 1:nrow(eset)) {
   
   # ord.gene <- 10
   
@@ -202,7 +204,7 @@ for (ord.gene in 290:nrow(eset)) {
     
   }
   
-  Sys.sleep(3)
+  Sys.sleep(0.01)
 }
 
 
