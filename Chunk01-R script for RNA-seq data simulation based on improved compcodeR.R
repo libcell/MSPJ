@@ -9,13 +9,13 @@
 #        &         %                                                           #
 ################################################################################
 
-### ****************************************************************************
-### code chunk number 01: Improved R script for RNA-sea data simulation.
-### ****************************************************************************
-
 # - R package: madsim, compcodeR, and LIMMA. 
 
-# For windows, work directory. 
+### ****************************************************************************
+### code chunk number 01: Improved R script for RNA-seq data simulation.
+### ****************************************************************************
+
+# Setting the work directory, for windows. 
 # setwd("F:/")
 
 ### Step-01. Data simulation of DNA Microarray using madsim package.
