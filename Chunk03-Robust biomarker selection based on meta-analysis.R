@@ -75,7 +75,7 @@ down.index <- NULL
 
 for (ord.gene in 1:nrow(eset)) {
   
-  # ord.gene <- 10
+  ### ord.gene <- 10
   
   stat.mat <- data.frame(matrix(NA, set.n, 8))
   

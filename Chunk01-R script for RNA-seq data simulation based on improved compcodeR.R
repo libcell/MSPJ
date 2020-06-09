@@ -120,7 +120,6 @@ madsim.yhc <- function (mdata = NULL,
 ### End of Function-01. 
 ### ------------------------------------------------------------------------ ###
 
-
 ### ------------------------------------------------------------------------ ###
 ### Function-02. Defined the function generateSyntheticData.yhc (for RNA-seq data simulation)
 
@@ -426,7 +425,6 @@ generateSyntheticData.yhc <- function(dataset,
 
 ### End of Function-02. 
 ### ------------------------------------------------------------------------ ###
-
 
 ### ------------------------------------------------------------------------ ###
 ### Function-03. Define the function to generate multiple sub-groups from primary study. 
