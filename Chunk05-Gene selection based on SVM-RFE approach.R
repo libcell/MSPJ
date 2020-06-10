@@ -43,11 +43,15 @@ if (all(as.integer(eset) == as.numeric(eset))) {
 
 ### Data normalization for gene expression matrix filled by counts. 
 
-DGElist <- DGEList(counts=t(eset))
+DGElist <- DGEList(counts = eset)
 
 DGElist <- calcNormFactors(DGElist, method = "upperquartile")
 
-boxplot(t(DGElist$counts))
+#. boxplot(log2(DGElist$count))
+
+# plotMDS(DGElist)
+
+eset <- DGElist$count
 
 ### End of Step-02.
 ### ------------------------------------------------------------------------ ###
@@ -82,7 +86,7 @@ dim(input)
 
 # halve.above - allowing you cut the features in half each round. 
 
-ranked.feat <- svmRFE(input[, 1:2000], k = 5, halve.above = 100)
+ranked.feat <- svmRFE(input, k = 5, halve.above = 100)
 
 ### ------------------------------------------------------------------------ ###
 ### Step-03. Generating multiple sub-groups based resampling for primary study. 
@@ -97,13 +101,13 @@ folds
 
 # Perform feature ranking on all training sets
 
-results <- lapply(folds, svmRFE.wrap, input[, 1:2000], k = 10, halve.above = 100)
+results <- lapply(folds, svmRFE.wrap, input, k = 10, halve.above = 100)
 length(results)
 results
 
 # Obtain top features across ALL folds
 
-top.features <- WriteFeatures(results, input[, 1:2000], save = FALSE)
+top.features <- WriteFeatures(results, input, save = FALSE)
 head(top.features)
 
 # Estimate generalization error using a varying number of top features
@@ -118,9 +122,6 @@ errors  <- sapply(featsweep, function(x) ifelse(is.null(x), NA, x$error))
 dev.new(width = 4, height = 4, bg = 'white')
 PlotErrors(errors, no.info = no.info)
 dev.off()
-
-count <- t(x)
-
 
 
 # End. 
