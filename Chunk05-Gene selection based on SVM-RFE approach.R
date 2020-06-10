@@ -25,13 +25,18 @@
 eset <- get(load("seq.matrix.RData"))
 rm(seq.matrix)
 
+### Filtering the genes with low-expression levels. 
+
+cpms <-  cpm(count)
+keep <- rowSums(cpms>1) >= 3
+count <- count[keep, ]
+
+### Data normalization for gene expression matrix filled counts. 
+
+
+
 ### ------------------------------------------------------------------------ ###
 ### Step-02. Setting the parameters used for re-sampling.
-
-# set.n: the times of resampling, or the number of sub-groups.   
-# size.min: the lower limit of sample size in each group.
-# size.max: the maximum sample size in each group. 
-# ord.gene: which gene you focused on. 
 
 sam.lab <- sapply(colnames(eset), function(x) strsplit(x, "-")[[1]][1])  
 names(sam.lab) <- NULL
@@ -97,7 +102,7 @@ dev.new(width = 4, height = 4, bg = 'white')
 PlotErrors(errors, no.info = no.info)
 dev.off()
 
-
+count <- t(x)
 
 
 
