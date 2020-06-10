@@ -71,8 +71,20 @@ up.index <- NULL
 
 down.index <- NULL
 
+MetaSet <- list()
+#. UpGene <- c()
+#. DownGene <- c()
+MetaResult <- list(MetaSet = MetaSet, UpGene = na.index, DownGene = na.index)
+
+i <- 0
+
+pb <- txtProgressBar(min = 0, max = nrow(eset), style = 3)
+
 for (ord.gene in 1:nrow(eset)) {
   
+  Sys.sleep(0.1)
+  
+  i <- i + 1
   ### ord.gene <- 10
   
   stat.mat <- data.frame(matrix(NA, set.n, 8))
@@ -125,26 +137,7 @@ for (ord.gene in 1:nrow(eset)) {
                   data = stat.mat, # Data frame containing the study information
                   sm = "SMD")  # One of three measures ("MD", "SMD" and "ROM")
   
-  forest(res, 
-         col.fix = "red", 
-         col.random = "blue",
-         col.study = "black",
-         col.square = "gray",
-         #. col.square.lines = col.square,
-         col.inside = "white",
-         col.diamond = "gray",
-         #. col.diamond.fixed = col.diamond,
-         #. col.diamond.random = col.diamond,
-         col.diamond.lines = "black",
-         #. col.diamond.lines.fixed = col.diamond.lines,
-         #. col.diamond.lines.random = col.diamond.lines,
-         #. col.inside.fixed = col.inside,
-         #. col.inside.random = col.inside,
-         col.predict = "red",
-         col.predict.lines = "black",
-         col.by = "darkgray",
-         col.label.right = "black",
-         col.label.left = "black")
+  MetaSet[[i]] <- res
   
   # Extracting the detail model parameters: 
   
@@ -172,9 +165,9 @@ for (ord.gene in 1:nrow(eset)) {
       
       up.index <- c(up.index, ord.gene)
       
-      up.inf <- paste("The gene", ord.gene, "was up-regulated!", sep = " ")
+      # up.inf <- paste("The gene", ord.gene, "was up-regulated!", sep = " ")
       
-      print(up.inf)
+      # print(up.inf)
       
     } else 
       
@@ -182,15 +175,15 @@ for (ord.gene in 1:nrow(eset)) {
         
         down.index <- c(down.index, ord.gene)
         
-        down.inf <- paste("The gene", ord.gene, "was down-regulated!", sep = " ")
+        # down.inf <- paste("The gene", ord.gene, "was down-regulated!", sep = " ")
         
-        print(down.inf)
+        # print(down.inf)
         
       } else {
         
-        non.inf <- paste("The gene", ord.gene, "was not changed at the significant level with 0.05!", sep = " ")
+        # non.inf <- paste("The gene", ord.gene, "was not changed at the significant level with 0.05!", sep = " ")
         
-        print(non.inf)
+        # print(non.inf)
         
       }
     
@@ -202,9 +195,10 @@ for (ord.gene in 1:nrow(eset)) {
     
   }
   
-  Sys.sleep(0.01)
+  setTxtProgressBar(pb, ord.gene)
 }
 
+close(pb)
 
 # Funnel plot for a given gene (ord.gene). 
 
