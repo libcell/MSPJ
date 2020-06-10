@@ -621,3 +621,57 @@ batchMeta <- function(data.list, cutoff = 0.5, g.start = 1, g.end = 100) {
 
 ### End of Function-04. 
 ### ------------------------------------------------------------------------ ###
+
+### ------------------------------------------------------------------------ ###
+### Function-05. Define the function to generate the meta object.  
+
+singleMeta <- function(data.list, ord.gene = 100) {
+  
+  stat.mat <- data.frame(matrix(NA, set.n, 8))
+  
+  names(stat.mat) <- c("study", "year", 
+                       "n.e", "mean.e", "sd.e", 
+                       "n.c", "mean.c", "sd.c")
+  
+  stat.mat$study <- paste("sampling_set", 1:set.n, sep = "-")
+  
+  stat.mat$year <- sample(2000:2020, set.n, replace = TRUE)
+  
+  # x <- sample.sets[[1]]
+  
+  f.ne <- function(x) length(grep("Experimental", colnames(x)))
+  
+  f.meane <- function(x) mean(x[ord.gene, grep("Experimental", colnames(x))])
+  
+  f.sde <- function(x) sd(x[ord.gene, grep("Experimental", colnames(x))])
+  
+  f.nc <- function(x) length(grep("Control", colnames(x)))
+  
+  f.meanc <- function(x) mean(x[ord.gene, grep("Control", colnames(x))])
+  
+  f.sdc <- function(x) sd(x[ord.gene, grep("Control", colnames(x))])
+  
+  stat.mat$n.e <- unlist(lapply(data.list, f.ne))
+  stat.mat$n.c <- unlist(lapply(data.list, f.nc))
+  
+  stat.mat$mean.e <- unlist(lapply(data.list, f.meane))
+  stat.mat$mean.c <- unlist(lapply(data.list, f.meanc))
+  
+  stat.mat$sd.e <- unlist(lapply(data.list, f.sde))
+  stat.mat$sd.c <- unlist(lapply(data.list, f.sdc))
+  
+  res <- metacont(n.e, # Number of observations in experimental group
+                  mean.e, # Estimated mean in experimental group
+                  sd.e, # Standard deviation in experimental group
+                  n.c, # Number of observations in control group
+                  mean.c, # Estimated mean in control group
+                  sd.c, # Standard deviation in control group
+                  studlab = study, # An optional vector with study labels
+                  data = stat.mat, # Data frame containing the study information
+                  sm = "SMD")  # One of three measures ("MD", "SMD" and "ROM")
+  
+  return(res)
+}
+
+### End of Function-05. 
+### ------------------------------------------------------------------------ ###

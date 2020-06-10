@@ -68,13 +68,33 @@ num.gene <- nrow(eset)
 batchMeta(data.list = sample.sets, 
           cutoff = 0.5, 
           g.start = 100, 
-          g.end = 500)
+          g.end = 5000)
 
 
+res <- singleMeta(data.list = sample.sets, 
+           ord.gene = 10)
 
-#. MetaSet <- list()
 
-
+forest(res, 
+       col.fix = "red", 
+       col.random = "blue",
+       col.study = "black",
+       col.square = "gray",
+       #. col.square.lines = col.square,
+       col.inside = "white",
+       col.diamond = "gray",
+       #. col.diamond.fixed = col.diamond,
+       #. col.diamond.random = col.diamond,
+       col.diamond.lines = "black",
+       #. col.diamond.lines.fixed = col.diamond.lines,
+       #. col.diamond.lines.random = col.diamond.lines,
+       #. col.inside.fixed = col.inside,
+       #. col.inside.random = col.inside,
+       col.predict = "red",
+       col.predict.lines = "black",
+       col.by = "darkgray",
+       col.label.right = "black",
+       col.label.left = "black")
 
 
 # Funnel plot for a given gene (ord.gene). 
@@ -84,8 +104,8 @@ col.seq <- rep(NA, ncol(eset))
 col.seq[grep("Experimental", colnames(eset))] <- "red"
 col.seq[grep("Control", colnames(eset))] <- "green"
 
-funnel(res, 
-       pch = "S", 
+funnel(x, 
+       pch = 20, 
        col = col.seq, 
        bg = 1:40)
 
