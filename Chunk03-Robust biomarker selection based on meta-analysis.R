@@ -65,7 +65,7 @@ library(meta)
 
 set.n <- length(sample.sets)
 
-cutoff <- 0.5
+cutoff <- 0.5 # Parameter 1: determin the threhold of SMDs. 
 
 na.index <- NULL
 
