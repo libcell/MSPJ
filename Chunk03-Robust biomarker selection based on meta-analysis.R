@@ -71,26 +71,6 @@ up.index <- NULL
 
 down.index <- NULL
 
-
-stat.mat <- data.frame(matrix(NA, set.n, 8))
-
-names(stat.mat) <- c("study", "year", 
-                     "n.e", "mean.e", "sd.e", 
-                     "n.c", "mean.c", "sd.c")
-
-stat.mat$study <- paste("sampling_set", 1:set.n, sep = "-")
-
-stat.mat$year <- sample(2000:2020, set.n, replace = TRUE)
-
-
-
-
-
-
-
-
-
-
 for (ord.gene in 1:nrow(eset)) {
   
   ### ord.gene <- 10
