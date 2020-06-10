@@ -27,6 +27,10 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 if (!require("edgeR")) BiocManager::install("edgeR")
 if (!require("compcodeR")) BiocManager::install("compcodeR")
 
+library(edgeR)
+library(compcodeR)
+library(meta)
+
 ### End of Step-01. 
 ### ------------------------------------------------------------------------ ###
 
