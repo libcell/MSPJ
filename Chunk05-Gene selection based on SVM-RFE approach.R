@@ -25,15 +25,32 @@
 eset <- get(load("seq.matrix.RData"))
 rm(seq.matrix)
 
+### End of Step-01.
+### ------------------------------------------------------------------------ ###
+
+### ------------------------------------------------------------------------ ###
+### Step-02. Data preprocessing for seq.matrix. 
+
 ### Filtering the genes with low-expression levels. 
 
-cpms <-  cpm(count)
-keep <- rowSums(cpms>1) >= 3
-count <- count[keep, ]
+if (all(as.integer(eset) == as.numeric(eset))) {
+  
+  cpms <-  cpm(eset)
+  keep <- rowSums(cpms>1) >= 3
+  eset <- eset[keep, ]
+  
+}
 
-### Data normalization for gene expression matrix filled counts. 
+### Data normalization for gene expression matrix filled by counts. 
 
+DGElist <- DGEList(counts=t(eset))
 
+DGElist <- calcNormFactors(DGElist, method = "upperquartile")
+
+boxplot(t(DGElist$counts))
+
+### End of Step-02.
+### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
 ### Step-02. Setting the parameters used for re-sampling.
