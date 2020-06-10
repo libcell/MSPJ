@@ -63,142 +63,19 @@ sample.sets <- generateSubGroup(eset, set.n = 40, size.min = 10, size.max = 20)
 
 set.n <- length(sample.sets)
 
-cutoff <- 0.5 # Parameter 1: determin the threhold of SMDs. 
+num.gene <- nrow(eset)
 
-na.index <- NULL
+batchMeta(data.list = sample.sets, 
+          cutoff = 0.5, 
+          g.start = 100, 
+          g.end = 500)
 
-up.index <- NULL
 
-down.index <- NULL
 
-MetaSet <- list()
-#. UpGene <- c()
-#. DownGene <- c()
-MetaResult <- list(MetaSet = MetaSet, UpGene = na.index, DownGene = na.index)
+#. MetaSet <- list()
 
-i <- 0
 
-pb <- txtProgressBar(min = 0, max = nrow(eset), style = 3)
 
-for (ord.gene in 1:nrow(eset)) {
-  
-  Sys.sleep(0.1)
-  
-  i <- i + 1
-  ### ord.gene <- 10
-  
-  stat.mat <- data.frame(matrix(NA, set.n, 8))
-  
-  names(stat.mat) <- c("study", "year", 
-                       "n.e", "mean.e", "sd.e", 
-                       "n.c", "mean.c", "sd.c")
-  
-  stat.mat$study <- paste("sampling_set", 1:set.n, sep = "-")
-  
-  stat.mat$year <- sample(2000:2020, set.n, replace = TRUE)
-  
-  # x <- sample.sets[[1]]
-  
-  f.ne <- function(x) length(grep("Experimental", colnames(x)))
-  
-  f.meane <- function(x) mean(x[ord.gene, grep("Experimental", colnames(x))])
-  
-  f.sde <- function(x) sd(x[ord.gene, grep("Experimental", colnames(x))])
-  
-  f.nc <- function(x) length(grep("Control", colnames(x)))
-  
-  f.meanc <- function(x) mean(x[ord.gene, grep("Control", colnames(x))])
-  
-  f.sdc <- function(x) sd(x[ord.gene, grep("Control", colnames(x))])
-  
-  stat.mat$n.e <- unlist(lapply(sample.sets, f.ne))
-  stat.mat$n.c <- unlist(lapply(sample.sets, f.nc))
-  
-  stat.mat$mean.e <- unlist(lapply(sample.sets, f.meane))
-  stat.mat$mean.c <- unlist(lapply(sample.sets, f.meanc))
-  
-  stat.mat$sd.e <- unlist(lapply(sample.sets, f.sde))
-  stat.mat$sd.c <- unlist(lapply(sample.sets, f.sdc))
-  
-  # DT::datatable(stat.mat)
-  
-  ### ------------------------------------------------------------------------ ###
-  ### Step-05. Implementation of meta-analysis for a specific gene (ord.gene).
-  
-  # Forest plot for a given gene (ord.gene). 
-  
-  res <- metacont(n.e, # Number of observations in experimental group
-                  mean.e, # Estimated mean in experimental group
-                  sd.e, # Standard deviation in experimental group
-                  n.c, # Number of observations in control group
-                  mean.c, # Estimated mean in control group
-                  sd.c, # Standard deviation in control group
-                  studlab = study, # An optional vector with study labels
-                  data = stat.mat, # Data frame containing the study information
-                  sm = "SMD")  # One of three measures ("MD", "SMD" and "ROM")
-  
-  MetaSet[[i]] <- res
-  
-  # Extracting the detail model parameters: 
-  
-  # - The SMD statistics in random effect model. 
-  
-  zTE.r <- res$TE.random # Estimated treatment effect (TE) and standard error of individual studies
-  lTE.r <- res$lower.random
-  uTE.r <- res$upper.random
-  
-  # - The SMD statistics in fixed effect model. 
-  
-  zTE.f <- res$TE.fixed # Estimated treatment effect (TE) and standard error of individual studies
-  lTE.f <- res$lower.fixed
-  uTE.f <- res$upper.fixed
-  
-  # - Heterogeneity statistic I2, requiring < 50%. 
-  Heter.I2 <- res$I2
-  Heter.p <- res$pval.Q
-  
-  # Finally, DEGs were identified by above indexes. 
-  
-  if (!is.na(lTE.r) & !is.na(lTE.f) & !is.na(uTE.r) & !is.na(uTE.f)) {
-    
-    if (lTE.r > cutoff & lTE.f > cutoff) {
-      
-      up.index <- c(up.index, ord.gene)
-      
-      # up.inf <- paste("The gene", ord.gene, "was up-regulated!", sep = " ")
-      
-      # print(up.inf)
-      
-    } else 
-      
-      if (uTE.r < -cutoff & uTE.f < -cutoff) {
-        
-        down.index <- c(down.index, ord.gene)
-        
-        # down.inf <- paste("The gene", ord.gene, "was down-regulated!", sep = " ")
-        
-        # print(down.inf)
-        
-      } else {
-        
-        # non.inf <- paste("The gene", ord.gene, "was not changed at the significant level with 0.05!", sep = " ")
-        
-        # print(non.inf)
-        
-      }
-    
-  } else {
-    
-    na.index <- c(na.index, ord.gene) ############
-    
-    next
-    
-  }
-  
-  setTxtProgressBar(pb, ord.gene)
-}
-
-close(pb)
 
 # Funnel plot for a given gene (ord.gene). 
 
