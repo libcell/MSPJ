@@ -26,11 +26,15 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 
 if (!require("edgeR")) BiocManager::install("edgeR")
 if (!require("compcodeR")) BiocManager::install("compcodeR")
+if (!require("meta")) install.packages("meta")
+if (!require("e1071")) install.packages("e1071")
+if (!require("coin")) install.packages("coin")
 
 library(edgeR)
 library(compcodeR)
 library(meta)
 library(e1071)
+library(coin)
 
 ### End of Step-01. 
 ### ------------------------------------------------------------------------ ###
