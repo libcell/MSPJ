@@ -679,7 +679,7 @@ singleMeta <- function(data.list, ord.gene = 100) {
 
 ### ------------------------------------------------------------------------ ###
 ### Function-06. A set of SVM-RFE functions for gene selection. 
-### johncolby/SVM-RFE/msvmRFE.R, from Github. 
+### Note: derived from johncolby/SVM-RFE/msvmRFE.R in Github. 
 
 #++ Function-6.1 svmRFE.wrap
 
