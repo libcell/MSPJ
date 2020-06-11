@@ -23,9 +23,7 @@
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Loading the gene expression data in *.csv
 
-eset <- get(load("seq.matrix.RData"))
-
-rm(seq.matrix)
+input <- get(load("input.RData"))
 
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
@@ -65,7 +63,6 @@ for (g in all.genes) {
   tmp <- Summarize(get(g) ~ sam.lab, data = input, digits = 3)
   
   # print(tmp)
-  
   # boxplot(get(g) ~ sam.lab, data = input)
   
   deg.per <- try(independence_test(get(g) ~ sam.lab, data = input), silent = FALSE)
@@ -78,6 +75,8 @@ for (g in all.genes) {
   if (!is.na(deg.p) & deg.p < 0.05) deg.count <- c(deg.count, g) else next
   
 }
+
+deg.per <- deg.count; rm(deg.count)
 
 # For permutation test of independence
 # For two groups as independent samples, 
@@ -106,6 +105,7 @@ for (i in 2:20001) {
   p <- c(p, y$p.value)
   #Sys.sleep(3)
 }
+
 
 plot(fc, ylim = c(0.9, 1.1))
 
