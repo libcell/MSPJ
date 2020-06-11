@@ -45,7 +45,10 @@ print(eset[1:6, 1:6])
 # size.max: the maximum sample size in each group. 
 # ord.gene: which gene you focused on. 
 
-sample.sets <- generateSubGroup(eset, set.n = 50, size.min = 10, size.max = 20)
+sample.sets <- generateSubGroup(eset, 
+                                set.n = 50, 
+                                size.min = 10, 
+                                size.max = 20)
 
 ### End of Step-02.
 ### ------------------------------------------------------------------------ ###
