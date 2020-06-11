@@ -77,8 +77,8 @@ library(compcodeR)
 
 seqdata.obj <- generateSyntheticData.yhc(dataset = "seq.data", 
                                          n.vars = 20000, # the number of genes
-                                         m1 = 15, # 
-                                         m2 = 10, # 
+                                         m1 = 15, # number of samples in experimental group
+                                         m2 = 10, # number of samples in control group
                                          n.diffexp = 500,
                                          fraction.upregulated = 0.5,
                                          output.file = "seqdata.rds")
