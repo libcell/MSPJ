@@ -54,21 +54,27 @@ sample.sets <- generateSubGroup(eset,
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Step-04. Computing the statistics used for meta-analysis.
+### Step-03. Computing the statistics used for meta-analysis.
 
 set.n <- length(sample.sets)
 
 num.gene <- nrow(eset)
 
+# 1) Identifying the differentially expressed genes by meta-analysis, in bulk. 
+
 batchMeta(data.list = sample.sets, 
           cutoff = 0.5, 
-          g.start = 100, 
+          g.start = 300, 
           g.end = 500)
 
+# 2) Identifying the differentially expressed genes by meta-analysis, one by one. 
+
+# -- Generate the meta object. 
 
 res <- singleMeta(data.list = sample.sets, 
-           ord.gene = 10)
+                  ord.gene = 10)
 
+# -- Draw the forest plot.  
 
 forest(res, 
        col.fix = "red", 
@@ -91,8 +97,7 @@ forest(res,
        col.label.right = "black",
        col.label.left = "black")
 
-
-# Funnel plot for a given gene (ord.gene). 
+# -- Draw the funnel plot for a given gene. 
 
 col.seq <- rep(NA, ncol(eset))
 
@@ -104,6 +109,7 @@ funnel(res,
        col = col.seq, 
        bg = 1:40)
 
-# End. 
+### End of Step-03.
+### ------------------------------------------------------------------------ ###
 
 
