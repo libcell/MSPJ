@@ -10,7 +10,7 @@
 ################################################################################
 
 ### ****************************************************************************
-### code chunk number 06: Data analysis based permutation test.
+### code chunk number 05: Analysis of DEGs based permutation test.
 ### ****************************************************************************
 
 ### Reference: Implementing a class of permutation tests: the coin package, 2008. 
@@ -27,13 +27,11 @@ eset <- get(load("seq.matrix.RData"))
 
 rm(seq.matrix)
 
+### End of Step-01.
+### ------------------------------------------------------------------------ ###
+
 ### ------------------------------------------------------------------------ ###
 ### Step-02. Setting the parameters used for re-sampling.
-
-# set.n: the times of resampling, or the number of sub-groups.   
-# size.min: the lower limit of sample size in each group.
-# size.max: the maximum sample size in each group. 
-# ord.gene: which gene you focused on. 
 
 if (!require("coin")) install.packages("coin")
 
