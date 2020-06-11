@@ -31,7 +31,8 @@ eset.mat <- as.data.frame(t(eset))
 
 input <- as.data.frame(cbind(sam.lab, eset.mat))
 
-# input[1:10, 1:10]
+### End of Step-01.
+### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
 ### Step-02. training the SVM models using k-fold Cross-Validation (inner loop). 
@@ -105,11 +106,6 @@ plot(res.roc, col = "red")
 auc.value <- auc(res.roc)
 
 auc.value
-
-
-
-
-
 
 
 
