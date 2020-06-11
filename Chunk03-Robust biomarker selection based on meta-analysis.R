@@ -107,9 +107,7 @@ col.seq[grep("Control", colnames(eset))] <- "green"
 funnel(res, 
        pch = 20, 
        col = col.seq, 
-       bg = 1:40)
+       bg = 1:50)
 
 ### End of Step-03.
 ### ------------------------------------------------------------------------ ###
-
-
