@@ -30,32 +30,24 @@
 eset <- get(load("mcr.matrix.RData")); rm(mcr.matrix)
 # eset <- get(load("seq.matrix.RData")); rm(seq.matrix)
 
+print(eset[1:6, 1:6])
+
 # DT::datatable(eset)
 
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Step-02. Setting the parameters used for re-sampling.
+### Step-02. Generating multiple sub-groups based resampling for primary study. 
 
 # set.n: the times of resampling, or the number of sub-groups.   
 # size.min: the lower limit of sample size in each group.
 # size.max: the maximum sample size in each group. 
 # ord.gene: which gene you focused on. 
 
-#. set.n <- 40
-#. size.min <- 10
-#. size.max <- 20
-#. ord.gene <- 10
+sample.sets <- generateSubGroup(eset, set.n = 50, size.min = 10, size.max = 20)
 
-### ------------------------------------------------------------------------ ###
-### Step-03. Generating multiple sub-groups based resampling for primary study. 
-
-sample.sets <- generateSubGroup(eset, set.n = 40, size.min = 10, size.max = 20)
-
-# dim(subgroups[[5]])
-
-### End of Step-03.
+### End of Step-02.
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
