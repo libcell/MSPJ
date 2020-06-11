@@ -22,8 +22,8 @@
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Loading the gene expression data in *.csv
 
-eset <- get(load("seq.matrix.RData"))
-rm(seq.matrix)
+#. eset <- get(load("mcr.matrix.RData")); rm(mcr.matrix)
+eset <- get(load("seq.matrix.RData")); rm(seq.matrix)
 
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
@@ -31,56 +31,53 @@ rm(seq.matrix)
 ### ------------------------------------------------------------------------ ###
 ### Step-02. Data preprocessing for seq.matrix. 
 
-### Filtering the genes with low-expression levels. 
-
 if (all(as.integer(eset) == as.numeric(eset))) {
+  
+  #-- Filtering the genes with low-expression levels. 
   
   cpms <-  cpm(eset)
   keep <- rowSums(cpms>1) >= 3
   eset <- eset[keep, ]
   
+  #-- Data normalization for gene expression matrix filled by counts. 
+  
+  DGElist <- DGEList(counts = eset)
+  
+  DGElist <- calcNormFactors(DGElist, method = "upperquartile")
+  
+  #. boxplot(log2(DGElist$count))
+  
+  # plotMDS(DGElist)
+  
+  eset <- DGElist$count  
+  
 }
-
-### Data normalization for gene expression matrix filled by counts. 
-
-DGElist <- DGEList(counts = eset)
-
-DGElist <- calcNormFactors(DGElist, method = "upperquartile")
-
-#. boxplot(log2(DGElist$count))
-
-# plotMDS(DGElist)
-
-eset <- DGElist$count
 
 ### End of Step-02.
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Step-02. Setting the parameters used for re-sampling.
+### Step-03. Preparing the data file used for SVM-RFE gene selection.
 
-sam.lab <- sapply(colnames(eset), function(x) strsplit(x, "-")[[1]][1])  
+sam.lab <- sapply(colnames(eset), function(x) strsplit(x, "-")[[1]][1])
+
 names(sam.lab) <- NULL
 
 eset.mat <- as.data.frame(t(eset))
-# eset.mat[1:9, 1:6]
 
 input <- cbind(sam.lab, eset.mat)
 
 input <- as.data.frame(input)
 
-input[1:10, 1:10]
+print(input[1:10, 1:10])
 
+### End of Step-02.
+### ------------------------------------------------------------------------ ###
 
-set.seed(12)
-library(e1071)
-#. source('Chunk04-SVM-RFE implementation by johncolby.R')
+### ------------------------------------------------------------------------ ###
+### Step-04. Gene selection using SVM-RFE algorithm.
 
-# load("input.Rdata")
-
-# Take a look at the expected input structure
-dim(input)
-# input[1:5, 1:5]
+set.seed(1)
 
 # Basic usage: when k = 1, it was standard SVM-RFE; or, multiple SVM-RFE. 
 
@@ -88,8 +85,11 @@ dim(input)
 
 ranked.feat <- svmRFE(input, k = 5, halve.above = 100)
 
+### End of Step-04.
 ### ------------------------------------------------------------------------ ###
-### Step-03. Generating multiple sub-groups based resampling for primary study. 
+
+### ------------------------------------------------------------------------ ###
+### Step-05. Generating multiple sub-groups based resampling for primary study. 
 
 # Set up cross validation
 nfold <- 10
@@ -101,7 +101,7 @@ folds
 
 # Perform feature ranking on all training sets
 
-results <- lapply(folds, svmRFE.wrap, input, k = 10, halve.above = 100)
+results <- lapply(folds, svmRFE.wrap, input, k = 5, halve.above = 100)
 length(results)
 results
 
@@ -112,18 +112,17 @@ head(top.features)
 
 # Estimate generalization error using a varying number of top features
 
-featsweep <- lapply(1:5, FeatSweep.wrap, results, input)
+featsweep <- lapply(1:12, FeatSweep.wrap, results, input)
 featsweep
 
 # Make plot
-no.info <- min(prop.table(table(input[,1])))
+no.info <- min(prop.table(table(input[, 1])))
 errors  <- sapply(featsweep, function(x) ifelse(is.null(x), NA, x$error))
 
 dev.new(width = 4, height = 4, bg = 'white')
 PlotErrors(errors, no.info = no.info)
 dev.off()
 
-
-# End. 
-
+### End of Step-04.
+### ------------------------------------------------------------------------ ###
 

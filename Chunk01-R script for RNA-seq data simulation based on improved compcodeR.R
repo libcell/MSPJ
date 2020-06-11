@@ -30,6 +30,7 @@ if (!require("compcodeR")) BiocManager::install("compcodeR")
 library(edgeR)
 library(compcodeR)
 library(meta)
+library(e1071)
 
 ### End of Step-01. 
 ### ------------------------------------------------------------------------ ###
