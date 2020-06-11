@@ -57,7 +57,7 @@ for (g in all.genes) {
   
   # This variable, deg.count, stores all the differentially expressed genes.
   
-  if (!is.na(deg.p) & deg.p < 0.05) deg.count <- c(deg.count, g) else next
+  if (!is.na(deg.p) & deg.p < 0.01) deg.count <- c(deg.count, g) else next
   
 }
 

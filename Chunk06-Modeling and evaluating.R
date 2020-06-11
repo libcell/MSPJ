@@ -16,12 +16,23 @@
 ### Reference: Implementing a class of permutation tests: the coin package, 2008. 
 ### Ref: https://rcompanion.org/handbook/K_01.html
 
+
+deg.int <- intersect(intersect(deg.meta, deg.svm), deg.per)
+
+table(as.numeric(gsub("g", "", deg.int)) > 500)
+
+table(as.numeric(gsub("g", "", deg.meta)) > 500)
+table(as.numeric(gsub("g", "", deg.svm)) > 500)
+table(as.numeric(gsub("g", "", deg.per)) > 500)
+
+
+
+
+
 ### ------------------------------------------------------------------------ ###
 ### Step-01. preparing the datasets. 
 
-eset <- get(load("seq.matrix.RData"))
-
-rm(seq.matrix)
+eset <- get(load("seq.matrix.RData")); rm(seq.matrix)
 
 sam.lab <- sapply(colnames(eset), function(x) strsplit(x, "-")[[1]][1])  
 names(sam.lab) <- NULL
@@ -65,6 +76,9 @@ for (i in 1:top.n) {
   Sys.sleep(1)
 }
 
+### End of Step-02.
+### ------------------------------------------------------------------------ ###
+
 ### ------------------------------------------------------------------------ ###
 ### Step-03. Constructing the SVM models and validation with nested k-fold CV. 
 
@@ -107,7 +121,8 @@ auc.value <- auc(res.roc)
 
 auc.value
 
-
+### End of Step-03.
+### ------------------------------------------------------------------------ ###
 
 
 # ---------------------------------------------------------------------------- #
