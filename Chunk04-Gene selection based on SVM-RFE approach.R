@@ -110,18 +110,23 @@ results
 top.features <- WriteFeatures(results, input, save = FALSE)
 head(top.features)
 
+#-- Selecting the top n genes as the DEGs identified by SVM-RFE method. 
+
+deg.svm <- top.features$FeatureName[1:100]
+
+deg.svm <- as.character(deg.svm)
+
+deg.svm
+
 # Estimate generalization error using a varying number of top features
-
-featsweep <- lapply(1:12, FeatSweep.wrap, results, input)
-featsweep
-
+#. featsweep <- lapply(1:12, FeatSweep.wrap, results, input)
+#. featsweep
 # Make plot
-no.info <- min(prop.table(table(input[, 1])))
-errors  <- sapply(featsweep, function(x) ifelse(is.null(x), NA, x$error))
-
-dev.new(width = 4, height = 4, bg = 'white')
-PlotErrors(errors, no.info = no.info)
-dev.off()
+#. no.info <- min(prop.table(table(input[, 1])))
+#. errors  <- sapply(featsweep, function(x) ifelse(is.null(x), NA, x$error))
+#. dev.new(width = 4, height = 4, bg = 'white')
+#. PlotErrors(errors, no.info = no.info)
+#. dev.off()
 
 ### End of Step-04.
 ### ------------------------------------------------------------------------ ###
