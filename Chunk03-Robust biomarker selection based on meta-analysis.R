@@ -68,7 +68,7 @@ num.gene <- nrow(eset)
 batchMeta(data.list = sample.sets, 
           cutoff = 0.5, 
           g.start = 100, 
-          g.end = 5000)
+          g.end = 500)
 
 
 res <- singleMeta(data.list = sample.sets, 
@@ -104,7 +104,7 @@ col.seq <- rep(NA, ncol(eset))
 col.seq[grep("Experimental", colnames(eset))] <- "red"
 col.seq[grep("Control", colnames(eset))] <- "green"
 
-funnel(x, 
+funnel(res, 
        pch = 20, 
        col = col.seq, 
        bg = 1:40)
