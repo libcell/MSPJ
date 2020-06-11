@@ -71,6 +71,8 @@ input <- as.data.frame(input)
 
 print(input[1:10, 1:10])
 
+save(input, file = "input.RData")
+
 ### End of Step-03.
 ### ------------------------------------------------------------------------ ###
 
@@ -80,7 +82,6 @@ print(input[1:10, 1:10])
 set.seed(1)
 
 # Basic usage: when k = 1, it was standard SVM-RFE; or, multiple SVM-RFE. 
-
 # halve.above - allowing you cut the features in half each round. 
 
 ranked.feat <- svmRFE(input, k = 5, halve.above = 100)

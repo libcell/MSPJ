@@ -29,26 +29,9 @@ input <- get(load("input.RData"))
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Step-02. Setting the parameters used for re-sampling.
+### Step-02. Identifying the DEGs by permutation test, and p < 0.05.
 
-if (!require("coin")) install.packages("coin")
-
-library(coin)
-
-#. set.seed(1)
-#. n <- 100
-#. tr <- rbinom(100, 1, 0.5)
-#. y <- 1 + tr + rnorm(n, 0, 3)
-#. diff(by(y, tr, mean))
-#. s <- sample(tr, length(tr), FALSE)
-#. diff(by(y, s, mean))
-#. dist <- replicate(2000, diff(by(sample(y, length(y), FALSE), sample(tr, length(tr), FALSE), mean)))
-#. hist(dist, xlim = c(-3, 3), col = "black", breaks = 100)
-#. abline(v = diff(by(y, tr, mean)), col = "blue", lwd = 2)
-#. sum(dist > diff(by(y, tr, mean)))/2000  # one-tailed test
-
-# for coin package. 
-
+# using coin package. 
 # independence_test(y ~ tr, alternative = "greater")  # one-tailed
 # independence_test(y ~ tr, alternative = "two.sided")  # two-tailed
 
@@ -65,7 +48,9 @@ for (g in all.genes) {
   # print(tmp)
   # boxplot(get(g) ~ sam.lab, data = input)
   
-  deg.per <- try(independence_test(get(g) ~ sam.lab, data = input), silent = FALSE)
+  deg.per <- try(independence_test(get(g) ~ sam.lab, 
+                                   data = input), 
+                 silent = FALSE)
   
   # deg.Z <- deg.per@statistic@teststatistic
   deg.p <- deg.per@distribution@pvalue(deg.per@statistic@teststatistic)
@@ -78,9 +63,10 @@ for (g in all.genes) {
 
 deg.per <- deg.count; rm(deg.count)
 
+deg.per
+
 # For permutation test of independence
-# For two groups as independent samples, 
-# and tests if there is a difference in values between the two groups.
+# For two groups as independent samples, and tests if there is a difference in values between the two groups.
 
 # For permutation test of symmetry. 
 # For two groups as having paired or repeated data, paired within Individual.
@@ -90,29 +76,42 @@ deg.per <- deg.count; rm(deg.count)
 #. class(deg.per)
 #. getMethod("show","ScalarIndependenceTest")
 
-# End. 
+### End of Step-02.
+### ------------------------------------------------------------------------ ###
+
+### ------------------------------------------------------------------------ ###
+### Step-03. Identifying the DEGs by Student t-test and Fold change methods.
 
 fc <- NULL
 p <- NULL
-for (i in 2:20001) {
+for (i in 2:ncol(input)) {
   
   print(i)
-  x <- mean(input[, i][1:15])/mean(input[, i][16:25])
-  y <- t.test(input[, i][1:15], input[, i][16:25], paired = FALSE)
-  #print("++++++++++++++++++++++++++++++++++++++++")
+  x <- mean(input[, i][input$sam.lab == "Experimental"])/mean(input[, i][input$sam.lab == "Control"])
+  
+  y <- wilcox.test(input[, i][input$sam.lab == "Experimental"], input[, i][input$sam.lab == "Control"], 
+              paired = FALSE) # paired = TRUE indicates that, wilcoxon sign-rank test. 
   
   fc <- c(fc, x)
+  
   p <- c(p, y$p.value)
-  #Sys.sleep(3)
+  
+  # Sys.sleep(3)
 }
 
+plot(fc, -log(p, 10), xlim = c(0, 10))
 
-plot(fc, ylim = c(0.9, 1.1))
+abline(h = -log(0.05, 10), col = "red")
 
-table(((fc < 0.5 | fc > 2) & p < 0.05)[1:500])
+abline(v = c(0.5, 2), col = "blue")
+
+deg.wilcox <- colnames(input)[-1][((fc < 0.5 | fc > 2) & p < 0.05)]
 
 hist(p, breaks = 100)
 
 table(p[1:500] < 0.05)
 
 hist(input$g1, breaks = 10)
+
+### End of Step-03.
+### ------------------------------------------------------------------------ ###
