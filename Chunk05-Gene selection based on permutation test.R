@@ -39,10 +39,22 @@ library(FSA)
 
 all.genes <- names(input)[-1]
 
+gene.count <- length(all.genes)
+
 deg.count <- NULL
+
+i <- 0
+
+pb <- txtProgressBar(min = 0, max = gene.count, style = 3, char = "+")
 
 for (g in all.genes) {
   
+  i <- i + 1
+  
+  setTxtProgressBar(pb, i)
+  
+  # Display the progress bar!
+
   tmp <- Summarize(get(g) ~ sam.lab, data = input, digits = 3)
   
   # print(tmp)
@@ -55,11 +67,17 @@ for (g in all.genes) {
   # deg.Z <- deg.per@statistic@teststatistic
   deg.p <- deg.per@distribution@pvalue(deg.per@statistic@teststatistic)
   
+  print(i)
+  
+  flush.console()
+  
   # This variable, deg.count, stores all the differentially expressed genes.
   
   if (!is.na(deg.p) & deg.p < 0.01) deg.count <- c(deg.count, g) else next
   
 }
+
+close(pb)
 
 deg.per <- deg.count; rm(deg.count)
 
