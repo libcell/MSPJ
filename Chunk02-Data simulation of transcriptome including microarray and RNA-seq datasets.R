@@ -21,6 +21,8 @@
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Data simulation of DNA Microarray using madsim package.
 
+# library(meta)
+
 fparams <- data.frame(m1 = 15, # the number of samples in control group
                       m2 = 15, # the number of samples in experimental group
                       shape2 = 4, # shape2 refers to the beta distribution shape
@@ -71,7 +73,7 @@ save(mcr.matrix, file = "mcr.matrix.RData")
 # Warnning: you must run the module chunk01 before this step. 
 # tmpdir <- normalizePath(tempdir(), winslash = "/")
 
-library(compcodeR)
+# library(compcodeR)
 
 seqdata.obj <- generateSyntheticData.yhc(dataset = "seq.data", 
                                          n.vars = 20000, # the number of genes
