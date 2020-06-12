@@ -36,9 +36,6 @@ save(setlist, file = "setlist.RData")
 
 library(venn)
 
-#. op <- par(mfrow = c(2, 2))
-#. par(op)
-
 venn(x, lty = 0, col = "navyblue", zcolor = 1:3, lwd = 2, box = F)
 
 ### End of Step-01.
