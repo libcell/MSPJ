@@ -30,11 +30,13 @@ if (!require("meta")) install.packages("meta")
 if (!require("e1071")) install.packages("e1071")
 if (!require("coin")) install.packages("coin")
 
+library(madsim)
 library(edgeR)
 library(compcodeR)
 library(meta)
 library(e1071)
 library(coin)
+library(venn)
 
 ### End of Step-01. 
 ### ------------------------------------------------------------------------ ###
