@@ -34,9 +34,13 @@ save(setlist, file = "setlist.RData")
 
 library(venn)
 
-venn(x, lty = 2, col = "navyblue", zcolor = "style")
+#. op <- par(mfrow = c(2, 2))
+#. par(op)
 
-venn(x, lty = 2, col = "navyblue", zcolor = 1:3)
+venn(x, lty = 0, col = "navyblue", zcolor = 1:3, lwd = 2, box = F)
+
+
+
 
 ### ------------------------------------------------------------------------ ###
 ### Step-01. preparing the datasets. 
