@@ -10,12 +10,14 @@
 ################################################################################
 
 ### ****************************************************************************
-### code chunk number 07: modeling and vilidation using nested k-fold Cross-validation.
+### code chunk number 06: modeling and vilidation using nested k-fold Cross-validation.
 ### ****************************************************************************
 
 ### Reference: Implementing a class of permutation tests: the coin package, 2008. 
 ### Ref: https://rcompanion.org/handbook/K_01.html
 
+### ------------------------------------------------------------------------ ###
+### Step-01. Determing the final differentially expressed genes.  
 
 deg.int <- intersect(intersect(deg.meta, deg.svm), deg.per)
 
@@ -39,11 +41,11 @@ library(venn)
 
 venn(x, lty = 0, col = "navyblue", zcolor = 1:3, lwd = 2, box = F)
 
-
-
+### End of Step-01.
+### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Step-01. preparing the datasets. 
+### Step-02. preparing the datasets to be used in modeling. 
 
 eset <- get(load("seq.matrix.RData")); rm(seq.matrix)
 
@@ -55,7 +57,7 @@ eset.mat <- as.data.frame(t(eset))
 
 input <- as.data.frame(cbind(sam.lab, eset.mat))
 
-### End of Step-01.
+### End of Step-02.
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
