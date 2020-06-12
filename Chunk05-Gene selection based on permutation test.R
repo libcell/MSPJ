@@ -67,8 +67,6 @@ for (g in all.genes) {
   # deg.Z <- deg.per@statistic@teststatistic
   deg.p <- deg.per@distribution@pvalue(deg.per@statistic@teststatistic)
   
-  print(i)
-  
   flush.console()
   
   # This variable, deg.count, stores all the differentially expressed genes.
@@ -100,36 +98,24 @@ deg.per
 ### ------------------------------------------------------------------------ ###
 ### Step-03. Identifying the DEGs by Student t-test and Fold change methods.
 
-fc <- NULL
-p <- NULL
-for (i in 2:ncol(input)) {
-  
-  print(i)
-  x <- mean(input[, i][input$sam.lab == "Experimental"])/mean(input[, i][input$sam.lab == "Control"])
-  
-  y <- wilcox.test(input[, i][input$sam.lab == "Experimental"], input[, i][input$sam.lab == "Control"], 
-              paired = FALSE) # paired = TRUE indicates that, wilcoxon sign-rank test. 
-  
-  fc <- c(fc, x)
-  
-  p <- c(p, y$p.value)
-  
-  # Sys.sleep(3)
-}
-
-plot(fc, -log(p, 10), xlim = c(0, 10))
-
-abline(h = -log(0.05, 10), col = "red")
-
-abline(v = c(0.5, 2), col = "blue")
-
-deg.wilcox <- colnames(input)[-1][((fc < 0.5 | fc > 2) & p < 0.05)]
-
-hist(p, breaks = 100)
-
-table(p[1:500] < 0.05)
-
-hist(input$g1, breaks = 10)
+#..fc <- NULL
+#..p <- NULL
+#..for (i in 2:ncol(input)) {
+#..  print(i)
+#..  x <- mean(input[, i][input$sam.lab == "Experimental"])/mean(input[, i][input$sam.lab == "Control"])
+#..  y <- wilcox.test(input[, i][input$sam.lab == "Experimental"], 
+#..                   input[, i][input$sam.lab == "Control"], 
+#..                   paired = FALSE) # paired = TRUE indicates that, wilcoxon sign-rank test. 
+#..  fc <- c(fc, x)
+#..  p <- c(p, y$p.value)
+#..}
+#..plot(fc, -log(p, 10), xlim = c(0, 10))
+#..abline(h = -log(0.05, 10), col = "red")
+#..abline(v = c(0.5, 2), col = "blue")
+#..deg.wilcox <- colnames(input)[-1][((fc < 0.5 | fc > 2) & p < 0.05)]
+#..hist(p, breaks = 100)
+#..table(p[1:500] < 0.05)
+#..hist(input$g1, breaks = 10)
 
 ### End of Step-03.
 ### ------------------------------------------------------------------------ ###
