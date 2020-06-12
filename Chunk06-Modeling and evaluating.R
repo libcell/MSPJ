@@ -25,7 +25,22 @@ table(as.numeric(gsub("g", "", deg.meta)) > 500)
 table(as.numeric(gsub("g", "", deg.svm)) > 500)
 table(as.numeric(gsub("g", "", deg.per)) > 500)
 
+setlist <- list(Meta.analysis = deg.meta, 
+                SVM.RFE = deg.svm, 
+                Permutation = deg.per)
 
+save(setlist, file = "setlist.RData")
+
+
+library(venneuler)
+MyVenn <- venneuler(c(A=74344,B=33197,C=26464,D=148531,"A&B"=11797, 
+                      "A&C"=9004,"B&C"=6056,"A&B&C"=2172,"A&D"=0,"A&D"=0,"B&D"=0,"C&D"=0))
+MyVenn$labels <- c("A\n22","B\n7","C\n5","D\n58")
+plot(MyVenn)
+text(0.59,0.52,"1")
+text(0.535,0.51,"3")
+text(0.60,0.57,"2")
+text(0.64,0.48,"4") 
 
 
 

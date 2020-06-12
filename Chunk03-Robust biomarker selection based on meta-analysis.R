@@ -27,8 +27,8 @@
 
 # Taking the microarray data as example. 
 
-eset <- get(load("mcr.matrix.RData")); rm(mcr.matrix)
-# eset <- get(load("seq.matrix.RData")); rm(seq.matrix)
+# eset <- get(load("mcr.matrix.RData")); rm(mcr.matrix)
+eset <- get(load("seq.matrix.RData")); rm(seq.matrix)
 
 print(eset[1:6, 1:6])
 
@@ -46,7 +46,7 @@ print(eset[1:6, 1:6])
 # ord.gene: which gene you focused on. 
 
 sample.sets <- generateSubGroup(eset, 
-                                set.n = 50, 
+                                set.n = 40, 
                                 size.min = 10, 
                                 size.max = 20)
 
@@ -62,10 +62,13 @@ num.gene <- nrow(eset)
 
 # 1) Identifying the differentially expressed genes by meta-analysis, in bulk. 
 
-batchMeta(data.list = sample.sets, 
-          cutoff = 0.5, 
-          g.start = 300, 
-          g.end = 500)
+deg <- batchMeta(data.list = sample.sets, 
+                 cutoff = 0.5, 
+                 g.start = 1, 
+                 g.end = num.gene)
+
+deg.meta <- c(rownames(eset)[deg$UpGene], 
+              rownames(eset)[deg$DownGene])
 
 # 2) Identifying the differentially expressed genes by meta-analysis, one by one. 
 

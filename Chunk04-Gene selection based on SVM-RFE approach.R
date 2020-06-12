@@ -113,7 +113,7 @@ head(top.features)
 
 #-- Selecting the top n genes as the DEGs identified by SVM-RFE method. 
 
-deg.svm <- top.features$FeatureName[1:100]
+deg.svm <- top.features$FeatureName[1:500]
 
 deg.svm <- as.character(deg.svm)
 
