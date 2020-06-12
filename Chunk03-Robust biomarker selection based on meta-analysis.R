@@ -28,6 +28,7 @@
 # Taking the microarray data as example. 
 
 # eset <- get(load("mcr.matrix.RData")); rm(mcr.matrix)
+
 eset <- get(load("seq.matrix.RData")); rm(seq.matrix)
 
 print(eset[1:6, 1:6])
