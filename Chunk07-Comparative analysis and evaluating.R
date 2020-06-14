@@ -13,8 +13,9 @@
 ### code chunk number 06: modeling and vilidation using nested k-fold Cross-validation.
 ### ****************************************************************************
 
-### Reference: Implementing a class of permutation tests: the coin package, 2008. 
-### Ref: https://rcompanion.org/handbook/K_01.html
+###  
+### 
+
 
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Determing the final differentially expressed genes.  
