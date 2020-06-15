@@ -15,7 +15,7 @@
 ### code chunk number 01: Improved R script for RNA-seq data simulation.
 ### ****************************************************************************
 
-# Setting the work directory, for windows. 
+# Setting the work directory, under the Windows Operation System. 
 # setwd("F:/")
 
 ### ------------------------------------------------------------------------ ###
