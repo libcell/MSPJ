@@ -27,9 +27,14 @@
 
 # Selecting the dataset (microarray or RNA-seq). 
 
-# eset <- mcr.matrix; rm(mcr.matrix)
+if (!exists("eset")) {
+  
+  # eset <- mcr.matrix; rm(mcr.matrix)
+  
+  eset <- seq.matrix; rm(seq.matrix)
+  
+} 
 
-eset <- seq.matrix; rm(seq.matrix)
 
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
