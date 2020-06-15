@@ -69,7 +69,17 @@ down.id <- which(mcr.data$xid == -1)
 
 table(mcr.data$xid)
 
-save(mcr.matrix, file = "mcr.matrix.RData")
+mcr.file <- paste0("mcr", 
+                   "-", 
+                   num.control, "C", 
+                   "-", 
+                   num.experimental, "E", 
+                   "-", 
+                   num.gene, "g", 
+                   "-", 
+                   "matrix.RData")
+
+save(mcr.matrix, file = mcr.file)
 
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
@@ -109,7 +119,17 @@ down.gene <- rownames(seq.matrix)[seq.varanno$downregulation == 1]
 
 dim(seq.matrix)
 
-save(seq.matrix, file = "seq.matrix.RData")
+seq.file <- paste0("seq", 
+                   "-", 
+                   num.control, "C", 
+                   "-", 
+                   num.experimental, "E", 
+                   "-", 
+                   num.gene, "g", 
+                   "-", 
+                   "matrix.RData")
+
+save(seq.matrix, file = seq.file)
 
 ### End of Step-02. 
 ### ------------------------------------------------------------------------ ###
