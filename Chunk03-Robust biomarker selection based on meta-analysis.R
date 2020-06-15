@@ -29,6 +29,8 @@
 
 # eset <- get(load("mcr.matrix.RData")); rm(mcr.matrix)
 
+load(seq.file)
+
 eset <- get(load("seq.matrix.RData")); rm(seq.matrix)
 
 print(eset[1:6, 1:6])
