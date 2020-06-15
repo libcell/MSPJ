@@ -18,7 +18,8 @@
 # For windows, work directory. 
 # setwd("F:/") 
 
-# Please define the number of samples and genes, respectively. 
+### ------------------------------------------------------------------------ ###
+### Step-01. Please define the number of samples and genes, respectively.
 
 num.control <- 15
 
@@ -26,8 +27,11 @@ num.experimental <- 15
 
 num.gene <- 20000
 
+### End of Step-01.
 ### ------------------------------------------------------------------------ ###
-### Step-01. Data simulation of DNA Microarray using madsim package.
+
+### ------------------------------------------------------------------------ ###
+### Step-02. Data simulation of DNA Microarray using madsim package.
 
 # library(meta)
 
@@ -81,12 +85,12 @@ mcr.file <- paste0("mcr",
 
 save(mcr.matrix, file = mcr.file)
 
-### End of Step-01.
+### End of Step-02.
 ### ------------------------------------------------------------------------ ###
 
 
 ### ------------------------------------------------------------------------ ###
-### Step-02. Data simulation of RNA-sequencing using compcodeR package.
+### Step-03. Data simulation of RNA-sequencing using compcodeR package.
 
 # Warnning: you must run the module chunk01 before this step. 
 # tmpdir <- normalizePath(tempdir(), winslash = "/")
@@ -131,5 +135,5 @@ seq.file <- paste0("seq",
 
 save(seq.matrix, file = seq.file)
 
-### End of Step-02. 
+### End of Step-03. 
 ### ------------------------------------------------------------------------ ###
