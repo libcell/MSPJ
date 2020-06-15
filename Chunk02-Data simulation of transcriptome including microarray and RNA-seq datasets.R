@@ -16,15 +16,23 @@
 # - R package: madsim, compcodeR, and LIMMA. 
 
 # For windows, work directory. 
-# setwd("F:/")
+# setwd("F:/") 
+
+# Please define the number of samples and genes, respectively. 
+
+num.control <- 15
+
+num.experimental <- 15
+
+num.gene <- 20000
 
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Data simulation of DNA Microarray using madsim package.
 
 # library(meta)
 
-fparams <- data.frame(m1 = 15, # the number of samples in control group
-                      m2 = 15, # the number of samples in experimental group
+fparams <- data.frame(m1 = num.control, # the number of samples in control group
+                      m2 = num.experimental, # the number of samples in experimental group
                       shape2 = 4, # shape2 refers to the beta distribution shape
                       lb = 4, # 
                       ub = 14, # 
@@ -41,7 +49,7 @@ sdn <- 0.4 # normal distribution standard deviation for additive noise
 rseed <- 50 # computer random number initialization
 
 mcr.data <- madsim.yhc(mdata = NULL, 
-                   n = 20000, 
+                   n = num.gene, 
                    ratio = 0, 
                    fparams, 
                    dparams, 
@@ -76,9 +84,9 @@ save(mcr.matrix, file = "mcr.matrix.RData")
 # library(compcodeR)
 
 seqdata.obj <- generateSyntheticData.yhc(dataset = "seq.data", 
-                                         n.vars = 20000, # the number of genes
-                                         m1 = 15, # number of samples in experimental group
-                                         m2 = 10, # number of samples in control group
+                                         n.vars = num.gene, # the number of genes
+                                         m1 = num.experimental, # number of samples in experimental group
+                                         m2 = num.control, # number of samples in control group
                                          n.diffexp = 500,
                                          fraction.upregulated = 0.5,
                                          output.file = "seqdata.rds")
