@@ -27,15 +27,14 @@
 
 # Taking the microarray data as example. 
 
-# eset <- get(load("mcr.matrix.RData")); rm(mcr.matrix)
+# eset <- get(load(smcr.file)); rm(mcr.matrix)
+# eset <- get(load(seq.file)); rm(seq.matrix)
 
-load(seq.file)
+# eset <- mcr.matrix; rm(mcr.matrix)
 
-eset <- get(load("seq.matrix.RData")); rm(seq.matrix)
+eset <- seq.matrix; rm(seq.matrix)
 
 print(eset[1:6, 1:6])
-
-# DT::datatable(eset)
 
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
