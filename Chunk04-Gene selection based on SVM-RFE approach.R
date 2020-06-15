@@ -22,8 +22,10 @@
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Loading the gene expression data in *.csv
 
-# eset <- get(load(smcr.file)); rm(mcr.matrix)
-# eset <- get(load(seq.file)); rm(seq.matrix)
+#-- seq.matrix.RData: simulated RNA-seq data; 
+#-- mcr.matrix.RData: simulated microarray data. 
+
+# Selecting the dataset (microarray or RNA-seq). 
 
 # eset <- mcr.matrix; rm(mcr.matrix)
 

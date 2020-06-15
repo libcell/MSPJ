@@ -27,8 +27,6 @@
 
 # Selecting the dataset (microarray or RNA-seq). 
 
-
-
 # eset <- mcr.matrix; rm(mcr.matrix)
 
 eset <- seq.matrix; rm(seq.matrix)
