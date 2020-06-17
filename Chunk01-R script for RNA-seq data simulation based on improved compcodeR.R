@@ -26,10 +26,12 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 
 if (!require("edgeR")) BiocManager::install("edgeR")
 if (!require("compcodeR")) BiocManager::install("compcodeR")
+if (!require("preprocessCore")) BiocManager::install("preprocessCore")
 if (!require("meta")) install.packages("meta")
 if (!require("e1071")) install.packages("e1071")
 if (!require("coin")) install.packages("coin")
 
+library(preprocessCore)
 library(madsim)
 library(edgeR)
 library(compcodeR)
