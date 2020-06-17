@@ -90,7 +90,7 @@ sample.sets <- generateSubGroup(eset,
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Step-04. Computing the statistics used for meta-analysis.
+### Step-05. Computing the statistics used for meta-analysis.
 
 set.n <- length(sample.sets)
 
@@ -148,5 +148,5 @@ funnel(res,
        col = col.seq, 
        bg = 1:50)
 
-### End of Step-04.
+### End of Step-05.
 ### ------------------------------------------------------------------------ ###
