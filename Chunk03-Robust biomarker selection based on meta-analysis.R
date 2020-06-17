@@ -24,8 +24,6 @@ mypal1 <- terrain.colors(30)
 
 mypal2 <- pal_npg("nrc", alpha = 0.7)(10)
 
-boxplot(eset, col = mypal1)
-
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
 
@@ -33,6 +31,8 @@ boxplot(eset, col = mypal1)
 ### Step-02. Selecting the dataset, for DNA microarray data. 
 
 eset <- mcr.matrix; rm(mcr.matrix)
+
+boxplot(eset, col = mypal1)
 
 # eset <- seq.matrix; rm(seq.matrix)
 
