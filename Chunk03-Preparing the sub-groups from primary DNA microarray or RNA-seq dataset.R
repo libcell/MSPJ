@@ -20,7 +20,7 @@
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Preparing the colors used in this study. 
 
-mypal1 <- terrain.colors(30)
+mypal1 <- terrain.colors(num.control + num.experimental)
 
 mypal2 <- pal_npg("nrc", alpha = 0.7)(10)
 
@@ -45,11 +45,11 @@ print(eset[1:6, 1:6])
 
 if (all(as.integer(eset) == as.numeric(eset))) {
   
-  boxplot(log2(eset), col = mypal2, main = "RNA-sequencing data")
+  boxplot(log2(eset), col = mypal1, main = "RNA-sequencing data")
   
 } else {
   
-  boxplot(eset, col = mypal2, main = "DNA microarray data")
+  boxplot(eset, col = mypal1, main = "DNA microarray data")
   
 }
 
@@ -106,6 +106,7 @@ for (d in 1:length(sample.sets)) {
   
 }
 
+sample.sets[[1]][1:5, 1:5]
 #. 
 ### End of Step-04.
 ### ------------------------------------------------------------------------ ###
