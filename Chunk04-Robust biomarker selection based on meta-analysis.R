@@ -20,40 +20,7 @@
 # output: degs - a genelist, including the gene names, pooled SMDs, and so on. 
 
 ### ------------------------------------------------------------------------ ###
-### Step-01. Loading the gene expression matrix in *.csv, or *.RData format. 
-
-#-- seq.matrix.RData: simulated RNA-seq data; 
-#-- mcr.matrix.RData: simulated microarray data. 
-
-# Selecting the dataset (microarray or RNA-seq). 
-
-# eset <- mcr.matrix; rm(mcr.matrix)
-
-eset <- seq.matrix; rm(seq.matrix)
-
-print(eset[1:6, 1:6])
-
-### End of Step-01.
-### ------------------------------------------------------------------------ ###
-
-### ------------------------------------------------------------------------ ###
-### Step-02. Generating multiple sub-groups based resampling for primary study. 
-
-# set.n: the times of resampling, or the number of sub-groups.   
-# size.min: the lower limit of sample size in each group.
-# size.max: the maximum sample size in each group. 
-# ord.gene: which gene you focused on. 
-
-sample.sets <- generateSubGroup(eset, 
-                                set.n = 40, 
-                                size.min = 10, 
-                                size.max = 20)
-
-### End of Step-02.
-### ------------------------------------------------------------------------ ###
-
-### ------------------------------------------------------------------------ ###
-### Step-03. Computing the statistics used for meta-analysis.
+### Step-01. Computing the statistics used for meta-analysis.
 
 set.n <- length(sample.sets)
 
@@ -111,5 +78,5 @@ funnel(res,
        col = col.seq, 
        bg = 1:50)
 
-### End of Step-03.
+### End of Step-01.
 ### ------------------------------------------------------------------------ ###
