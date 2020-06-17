@@ -19,7 +19,7 @@
 # setwd("F:/") 
 
 ### ------------------------------------------------------------------------ ###
-### Step-01. Please define the number of samples and genes, respectively.
+### Step-01. Define the number of samples and genes, respectively.
 
 num.control <- 15
 
