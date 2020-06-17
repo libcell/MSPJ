@@ -30,6 +30,7 @@ if (!require("preprocessCore")) BiocManager::install("preprocessCore")
 if (!require("meta")) install.packages("meta")
 if (!require("e1071")) install.packages("e1071")
 if (!require("coin")) install.packages("coin")
+if (!require("ggsci")) install.packages("ggsci")
 
 library(preprocessCore)
 library(madsim)
@@ -39,6 +40,7 @@ library(meta)
 library(e1071)
 library(coin)
 library(venn)
+library(ggsci)
 
 ### End of Step-01. 
 ### ------------------------------------------------------------------------ ###

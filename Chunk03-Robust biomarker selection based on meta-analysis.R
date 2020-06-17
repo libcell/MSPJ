@@ -18,19 +18,31 @@
 #-- mcr.matrix.RData: simulated microarray data. 
 
 ### ------------------------------------------------------------------------ ###
-### Step-01. Selecting the dataset, for DNA microarray data. 
+### Step-01. Preparing the colors used in this study. 
 
-# eset <- mcr.matrix; rm(mcr.matrix)
+mypal1 <- terrain.colors(30)
 
-eset <- seq.matrix; rm(seq.matrix)
+mypal2 <- pal_npg("nrc", alpha = 0.7)(10)
 
-print(eset[1:6, 1:6])
+boxplot(eset, col = mypal1)
 
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Step-02. Generating multiple sub-groups based resampling for primary study. 
+### Step-02. Selecting the dataset, for DNA microarray data. 
+
+eset <- mcr.matrix; rm(mcr.matrix)
+
+# eset <- seq.matrix; rm(seq.matrix)
+
+print(eset[1:6, 1:6])
+
+### End of Step-02.
+### ------------------------------------------------------------------------ ###
+
+### ------------------------------------------------------------------------ ###
+### Step-03. Generating multiple sub-groups based resampling for primary study. 
 
 # set.n: the times of resampling, or the number of sub-groups.   
 # size.min: the lower limit of sample size in each group.
@@ -42,11 +54,11 @@ sample.sets <- generateSubGroup(eset,
                                 size.min = 10, 
                                 size.max = 20)
 
-### End of Step-02.
+### End of Step-03.
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Step-03. Computing the statistics used for meta-analysis.
+### Step-04. Computing the statistics used for meta-analysis.
 
 set.n <- length(sample.sets)
 
@@ -104,5 +116,5 @@ funnel(res,
        col = col.seq, 
        bg = 1:50)
 
-### End of Step-03.
+### End of Step-04.
 ### ------------------------------------------------------------------------ ###
