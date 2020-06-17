@@ -34,63 +34,28 @@ mypal2 <- pal_npg("nrc", alpha = 0.7)(10)
 
 if (!exists("eset")) {
   
-  eset <- mcr.matrix; rm(mcr.matrix)
+  # eset <- mcr.matrix; rm(mcr.matrix)
   # eset <- seq.matrix; rm(seq.matrix)
   
 } 
 
 print(eset[1:6, 1:6])
 
-### End of Step-02.
-### ------------------------------------------------------------------------ ###
-
 ### ------------------------------------------------------------------------ ###
 ### Step-03. Generating multiple sub-groups based resampling for primary study. 
 
-# set.n: the times of resampling, or the number of sub-groups.   
-# size.min: the lower limit of sample size in each group.
-# size.max: the maximum sample size in each group. 
 # ord.gene: which gene you focused on. 
 
 sample.sets <- generateSubGroup(eset, 
-                                set.n = 40, 
-                                size.min = 10, 
-                                size.max = 20)
+                                set.n = 40, # the number of sub-groups
+                                size.min = 10, # the lower limit of sample size
+                                size.max = 20) # the maximum sample size
 
 ### End of Step-03.
 ### ------------------------------------------------------------------------ ###
 
-
 ### ------------------------------------------------------------------------ ###
-### Step-04. Data preprocessing for seq.matrix. 
-#. 
-#. if (all(as.integer(eset) == as.numeric(eset))) {
-#.   
-#.   #-- Filtering the genes with low-expression levels. 
-#.   
-#.   cpms <-  cpm(eset)
-#.   keep <- rowSums(cpms>1) >= 3
-#.   eset <- eset[keep, ]
-#.   
-#.   #-- Data normalization for gene expression matrix filled by counts. 
-#.   
-#.   DGElist <- DGEList(counts = eset)
-#.   
-#.   DGElist <- calcNormFactors(DGElist, method = "upperquartile")
-#.   
-#.   #. boxplot(log2(DGElist$count))
-#.   
-#.   # plotMDS(DGElist)
-#.   
-#.   eset <- DGElist$count  
-#.   
-#. }
-#. 
-### End of Step-04.
-### ------------------------------------------------------------------------ ###
-
-### ------------------------------------------------------------------------ ###
-### Step-05. Computing the statistics used for meta-analysis.
+### Step-04. Computing the statistics used for meta-analysis.
 
 set.n <- length(sample.sets)
 
@@ -148,5 +113,5 @@ funnel(res,
        col = col.seq, 
        bg = 1:50)
 
-### End of Step-05.
+### End of Step-04.
 ### ------------------------------------------------------------------------ ###
