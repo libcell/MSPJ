@@ -43,7 +43,7 @@ deg.meta <- c(rownames(eset)[deg$UpGene],
 res <- singleMeta(data.list = sample.sets, 
                   ord.gene = 10)
 
-# -- Draw the forest plot.  
+# 3) Draw the forest plot.  
 
 forest(res, 
        col.fix = "red", 
@@ -66,7 +66,7 @@ forest(res,
        col.label.right = "black",
        col.label.left = "black")
 
-# -- Draw the funnel plot for a given gene. 
+# 4) Draw the funnel plot for a given gene. 
 
 col.seq <- rep(NA, ncol(eset))
 
