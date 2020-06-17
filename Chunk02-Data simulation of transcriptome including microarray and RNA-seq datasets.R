@@ -33,8 +33,6 @@ num.gene <- 20000
 ### ------------------------------------------------------------------------ ###
 ### Step-02. Data simulation of DNA Microarray using madsim package.
 
-# library(meta)
-
 fparams <- data.frame(m1 = num.control, # the number of samples in control group
                       m2 = num.experimental, # the number of samples in experimental group
                       shape2 = 4, # shape2 refers to the beta distribution shape
