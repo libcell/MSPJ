@@ -28,10 +28,17 @@ mypal2 <- pal_npg("nrc", alpha = 0.7)(10)
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Step-02. Selecting the dataset, for DNA microarray data. 
+### Step-02. Selecting the dataset, for DNA microarray and RNA-seq. 
 
-eset <- mcr.matrix; rm(mcr.matrix)
-# eset <- seq.matrix; rm(seq.matrix)
+# Selecting the dataset (microarray or RNA-seq). 
+
+if (!exists("eset")) {
+  
+  eset <- mcr.matrix; rm(mcr.matrix)
+  # eset <- seq.matrix; rm(seq.matrix)
+  
+} 
+
 print(eset[1:6, 1:6])
 
 ### End of Step-02.
@@ -51,6 +58,35 @@ sample.sets <- generateSubGroup(eset,
                                 size.max = 20)
 
 ### End of Step-03.
+### ------------------------------------------------------------------------ ###
+
+
+### ------------------------------------------------------------------------ ###
+### Step-04. Data preprocessing for seq.matrix. 
+#. 
+#. if (all(as.integer(eset) == as.numeric(eset))) {
+#.   
+#.   #-- Filtering the genes with low-expression levels. 
+#.   
+#.   cpms <-  cpm(eset)
+#.   keep <- rowSums(cpms>1) >= 3
+#.   eset <- eset[keep, ]
+#.   
+#.   #-- Data normalization for gene expression matrix filled by counts. 
+#.   
+#.   DGElist <- DGEList(counts = eset)
+#.   
+#.   DGElist <- calcNormFactors(DGElist, method = "upperquartile")
+#.   
+#.   #. boxplot(log2(DGElist$count))
+#.   
+#.   # plotMDS(DGElist)
+#.   
+#.   eset <- DGElist$count  
+#.   
+#. }
+#. 
+### End of Step-04.
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
