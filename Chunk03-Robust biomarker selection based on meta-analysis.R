@@ -31,11 +31,7 @@ mypal2 <- pal_npg("nrc", alpha = 0.7)(10)
 ### Step-02. Selecting the dataset, for DNA microarray data. 
 
 eset <- mcr.matrix; rm(mcr.matrix)
-
-boxplot(eset, col = mypal1)
-
 # eset <- seq.matrix; rm(seq.matrix)
-
 print(eset[1:6, 1:6])
 
 ### End of Step-02.
