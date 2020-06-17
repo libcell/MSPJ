@@ -29,9 +29,9 @@
 
 if (!exists("eset")) {
   
-  # eset <- mcr.matrix; rm(mcr.matrix)
+  eset <- mcr.matrix; rm(mcr.matrix)
   
-  eset <- seq.matrix; rm(seq.matrix)
+  # eset <- seq.matrix; rm(seq.matrix)
   
 } 
 
