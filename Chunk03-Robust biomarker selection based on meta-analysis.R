@@ -34,12 +34,24 @@ mypal2 <- pal_npg("nrc", alpha = 0.7)(10)
 
 if (!exists("eset")) {
   
-  # eset <- mcr.matrix; rm(mcr.matrix)
+  eset <- mcr.matrix; rm(mcr.matrix)
   # eset <- seq.matrix; rm(seq.matrix)
   
 } 
 
 print(eset[1:6, 1:6])
+
+# Visualizing the gene expression matrix. 
+
+if (all(as.integer(eset) == as.numeric(eset))) {
+  
+  boxplot(log2(eset), col = mypal2, main = "RNA-sequencing data")
+  
+} else {
+  
+  boxplot(eset, col = mypal2, main = "DNA microarray data")
+  
+}
 
 ### ------------------------------------------------------------------------ ###
 ### Step-03. Generating multiple sub-groups based resampling for primary study. 
@@ -51,11 +63,56 @@ sample.sets <- generateSubGroup(eset,
                                 size.min = 10, # the lower limit of sample size
                                 size.max = 20) # the maximum sample size
 
+sample.sets[[1]][1:5, 1:5]
+
 ### End of Step-03.
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Step-04. Computing the statistics used for meta-analysis.
+### Step-04. Preprocessing for DNA microarray or RNA-seq data, alternatively. 
+
+# For all sub-datasets.  
+
+for (d in 1:length(sample.sets)) {
+  
+  data <- sample.sets[[d]]
+  
+  if (all(as.integer(eset) == as.numeric(eset))) {
+    
+    #-- Data normalization for gene expression matrix filled by counts. 
+    
+    DGElist <- DGEList(counts = data)
+    
+    DGElist <- calcNormFactors(DGElist, method = "upperquartile")
+    
+    #. boxplot(log2(DGElist$count))
+    
+    # plotMDS(DGElist)
+    
+    data <- DGElist$count  
+    
+  } else {
+    
+    tmp <- normalize.quantiles(data)
+    
+    rownames(tmp) <- rownames(data)
+    
+    colnames(tmp) <- colnames(data)
+    
+    data <- tmp
+  }
+  
+  sample.sets[[d]] <- data
+  
+}
+
+#. 
+### End of Step-04.
+### ------------------------------------------------------------------------ ###
+
+
+### ------------------------------------------------------------------------ ###
+### Step-05. Computing the statistics used for meta-analysis.
 
 set.n <- length(sample.sets)
 
@@ -113,5 +170,5 @@ funnel(res,
        col = col.seq, 
        bg = 1:50)
 
-### End of Step-04.
+### End of Step-05.
 ### ------------------------------------------------------------------------ ###
