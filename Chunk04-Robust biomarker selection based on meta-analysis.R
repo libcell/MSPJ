@@ -70,8 +70,8 @@ forest(res,
 
 col.seq <- rep(NA, ncol(eset))
 
-col.seq[grep("Experimental", colnames(eset))] <- "red"
-col.seq[grep("Control", colnames(eset))] <- "green"
+col.seq[grep("Experimental", colnames(eset))] <- mypal2[1]
+col.seq[grep("Control", colnames(eset))] <- mypal2[2]
 
 funnel(res, 
        pch = 20, 
