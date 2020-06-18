@@ -10,11 +10,8 @@
 ################################################################################
 
 ### ****************************************************************************
-### code chunk number 06: modeling and vilidation using nested k-fold Cross-validation.
+### code chunk number 07: MSP method and its performance evaluation.
 ### ****************************************************************************
-
-###  
-### 
 
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Determing the final differentially expressed genes.  
@@ -55,6 +52,7 @@ eset <- mcr.matrix;
 # eset <- get(load("seq.matrix.RData"));
 
 sam.lab <- sapply(colnames(eset), function(x) strsplit(x, "-")[[1]][1])
+
 names(sam.lab) <- NULL
 
 eset.mat <- as.data.frame(t(eset))
@@ -174,6 +172,8 @@ legend("bottomright",
        legend = c("Model A", "Model B"), 
        col = c(1, 2), 
        lwd = 4)
+
+par(pty = "m")
 
 # lines(perf, col = "green")
 
