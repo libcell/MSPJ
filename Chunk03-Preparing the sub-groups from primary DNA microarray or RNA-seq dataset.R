@@ -13,7 +13,7 @@
 ### code chunk number 03: Generating the sub-groups based on resampling.
 ### ****************************************************************************
 
-### Title: Loading the gene expression matrix, in .RData format. 
+### Loading the gene expression matrix, in .RData format. 
 #-- seq.matrix.RData: simulated RNA-seq data; 
 #-- mcr.matrix.RData: simulated microarray data. 
 
