@@ -31,7 +31,7 @@ mypal2 <- pal_npg("nrc", alpha = 0.7)(10)
 ### Step-02. Selecting the dataset, for DNA microarray and RNA-seq. 
 
 ### @@@@@@@@@@@@@@ Selecting the dataset (microarray/RNA-seq) @@@@@@@@@@@@@@ ###
-### ======================================================================== ###
+### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
 if (!exists("eset")) {
   
   eset <- mcr.matrix
@@ -40,8 +40,8 @@ if (!exists("eset")) {
 } 
 
 print(eset[1:6, 1:6])
-### ======================================================================== ###
 
+### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
 
 # Visualizing the gene expression matrix. 
 
@@ -65,13 +65,14 @@ sample.sets <- generateSubGroup(eset,
                                 size.min = 10, # the lower limit of sample size
                                 size.max = 20) # the maximum sample size
 
-sample.sets[[1]][1:5, 1:5]
+print(sample.sets[[1]][1:5, 1:5])
 
 ### End of Step-03.
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
 ### Step-04. Preprocessing for DNA microarray or RNA-seq data, alternatively. 
+### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
 
 # For all sub-datasets.  
 
@@ -108,7 +109,9 @@ for (d in 1:length(sample.sets)) {
   
 }
 
-sample.sets[[1]][1:5, 1:5]
+print(sample.sets[[1]][1:5, 1:5])
+
+### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
 #. 
 ### End of Step-04.
 ### ------------------------------------------------------------------------ ###
