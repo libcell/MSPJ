@@ -10,7 +10,7 @@
 ################################################################################
 
 ### ****************************************************************************
-### code chunk number 04: Gene selection based on SVM-RFE algorithm.
+### code chunk number 05: Gene selection based on SVM-RFE algorithm.
 ### ****************************************************************************
 
 ### Title: A novel meta-analytical approach to improve identification of DEGs. 

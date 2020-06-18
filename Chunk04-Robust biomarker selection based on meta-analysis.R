@@ -10,7 +10,7 @@
 ################################################################################
 
 ### ****************************************************************************
-### code chunk number 03: The meta-analysis approach based on resampling.
+### code chunk number 04: The meta-analysis approach based on resampling.
 ### ****************************************************************************
 
 ### A novel meta-analytical approach to improve identification of DEGs. 
