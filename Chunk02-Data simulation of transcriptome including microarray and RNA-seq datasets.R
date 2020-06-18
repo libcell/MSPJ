@@ -32,11 +32,13 @@ num.gene <- 20000
 ### ------------------------------------------------------------------------ ###
 ### Step-02. Data simulation of DNA Microarray using madsim package.
 
+# library(madsim)
+
 fparams <- data.frame(m1 = num.control, # the number of samples in control group
                       m2 = num.experimental, # the number of samples in experimental group
                       shape2 = 4, # shape2 refers to the beta distribution shape
-                      lb = 4, # 
-                      ub = 14, # 
+                      lb = 4, # lower value
+                      ub = 14, # upper value
                       pde = 0.025, # percentage of DEGs
                       sym = 0.5) # partition of down- and up-regulated genes
 
