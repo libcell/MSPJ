@@ -86,7 +86,7 @@ save(input, file = "input.RData")
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Step-04. Gene selection using SVM-RFE algorithm.
+### Step-04. Gene selection using simple SVM-RFE algorithm.
 
 set.seed(1)
 
@@ -99,9 +99,10 @@ ranked.feat <- svmRFE(input, k = 5, halve.above = 100)
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Step-05. Generating multiple sub-groups based resampling for primary study. 
+### Step-05. Gene selection using multiple SVM-RFE algorithm.
 
-# Set up cross validation
+# 1) Generating multiple sub-groups based resampling, and setting up cross validation.
+
 nfold <- 10
 nrows <- nrow(input)
 folds <- rep(1:nfold, len=nrows)[sample(nrows)]
@@ -109,18 +110,18 @@ folds
 folds <- lapply(1:nfold, function(x) which(folds == x))
 folds
 
-# Perform feature ranking on all training sets
+# 2) Perform feature ranking on all training sets
 
 results <- lapply(folds, svmRFE.wrap, input, k = 5, halve.above = 100)
 length(results)
 results
 
-# Obtain top features across ALL folds
+# 3) Obtain top features across ALL folds
 
 top.features <- WriteFeatures(results, input, save = FALSE)
 head(top.features)
 
-#-- Selecting the top n genes as the DEGs identified by SVM-RFE method. 
+# 4) Selecting the top n genes as the DEGs identified by SVM-RFE method, eg. 500. 
 
 deg.svm <- top.features$FeatureName[1:500]
 
