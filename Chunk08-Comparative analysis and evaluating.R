@@ -134,9 +134,46 @@ all.pred.tables <- lapply(1:folds, function(i) {
 
 full.pred.table <- do.call(rbind, all.pred.tables)
 
-res.roc <- roc(full.pred.table$y.test, full.pred.table$y.pred)
+res.roc <- roc(full.pred.table$y.test, 
+               full.pred.table$y.pred, 
+               plot = TRUE, 
+               legacy.axes = TRUE)
 
-plot(res.roc, col = "red") 
+roc.df <- data.frame(TPP = res.roc$sensitivities * 100, 
+                     FPP = (1 - res.roc$specificities) * 100, 
+                     Thresholds = res.roc$thresholds)
+
+plot.roc(res.roc, 
+         col = "#377EB8", 
+         legacy.axes = TRUE, 
+         percent = TRUE, 
+         xlab = "False Positive Percentage", 
+         ylab = "TRUE Positive Percentage", 
+         lwd = 4, 
+         print.auc = TRUE, 
+         print.auc.x = 0.45, 
+         print.auc.y = 0.45,
+         auc.polygon = TRUE, 
+         auc.polygon.col = "#377EB822") 
+
+plot.roc(res.roc, 
+         col = "#377EB8", 
+         legacy.axes = TRUE, 
+         percent = TRUE, 
+         xlab = "False Positive Percentage", 
+         ylab = "TRUE Positive Percentage", 
+         lwd = 4, 
+         print.auc = TRUE, 
+         print.auc.x = 0.85, 
+         print.auc.y = 0.85,
+         auc.polygon = TRUE, 
+         auc.polygon.col = "#377EB822", 
+         add = TRUE) 
+
+legend("bottomright", 
+       legend = c("Model A", "Model B"), 
+       col = c(1, 2), 
+       lwd = 4)
 
 # lines(perf, col = "green")
 
@@ -146,53 +183,3 @@ auc.value
 
 ### End of Step-03.
 ### ------------------------------------------------------------------------ ###
-
-# ---------------------------------------------------------------------------- #
-
-library(ROCR)
-
-test.id <- sample(1:25, 13, replace = FALSE)
-
-str(model)
-
-training.X <- X[-test.id, ]
-training.y <- y[-test.id]
-
-test.X <- X[test.id, ]
-test.y <- y[test.id]
-
-model2 <- svm(x = training.X, 
-              y = training.y, 
-              kernel = "radial", 
-              type = "C-classification", 
-              probability = TRUE, 
-              cross = 2)
-
-model2$accuracies
-
-model5 <- svm(x = training.X, 
-              y = training.y, 
-              kernel = "radial", 
-              type = "C-classification", 
-              probability = TRUE, 
-              cross = 5)
-
-model5$accuracies
-
-model3 <- svm(x = training.X, 
-              y = training.y, 
-              kernel = "radial", 
-              type = "C-classification", 
-              probability = TRUE, 
-              cross = 3)
-
-model3$accuracies
-
-predict.y1 <- predict(object = model2, newdata = test.X, probability = TRUE)
-predict.y2 <- predict(object = model5, newdata = test.X, probability = TRUE)
-
-table(predict.y1, test.y)
-table(predict.y2, test.y)
-
-# End. 
-
