@@ -46,7 +46,7 @@ if (all(as.integer(eset) == as.numeric(eset))) {
   
   #-- Filtering the genes with low-expression levels. 
   
-  cpms <-  cpm(eset)
+  cpms <- cpm(eset)
   keep <- rowSums(cpms>1) >= 3
   eset <- eset[keep, ]
   
