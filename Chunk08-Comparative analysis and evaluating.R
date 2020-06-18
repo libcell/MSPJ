@@ -19,11 +19,10 @@
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Determing the final differentially expressed genes.  
 
-load("setlist.RData")
-
-deg.meta <- setlist$Meta.analysis
-deg.svm <- setlist$SVM.RFE
-deg.per <- setlist$Permutation
+#. load("setlist.RData")
+#. deg.meta <- setlist$Meta.analysis
+#. deg.svm <- setlist$SVM.RFE
+#. deg.per <- setlist$Permutation
 
 deg.int <- intersect(intersect(deg.meta, deg.svm), deg.per)
 
@@ -39,8 +38,12 @@ setlist <- list(Meta.analysis = deg.meta,
 
 save(setlist, file = "setlist.RData")
 
-
-venn(x, lty = 0, col = "navyblue", zcolor = 1:3, lwd = 2, box = F)
+venn(setlist, 
+     lty = 0, 
+     col = "navyblue", 
+     zcolor = 1:3, 
+     lwd = 2, 
+     box = F)
 
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
@@ -48,9 +51,10 @@ venn(x, lty = 0, col = "navyblue", zcolor = 1:3, lwd = 2, box = F)
 ### ------------------------------------------------------------------------ ###
 ### Step-02. preparing the datasets to be used in modeling. 
 
-eset <- get(load("seq.matrix.RData")); rm(seq.matrix)
+eset <- mcr.matrix;
+# eset <- get(load("seq.matrix.RData"));
 
-sam.lab <- sapply(colnames(eset), function(x) strsplit(x, "-")[[1]][1])  
+sam.lab <- sapply(colnames(eset), function(x) strsplit(x, "-")[[1]][1])
 names(sam.lab) <- NULL
 
 eset.mat <- as.data.frame(t(eset))
@@ -98,6 +102,8 @@ for (i in 1:top.n) {
 ### ------------------------------------------------------------------------ ###
 ### Step-03. Constructing the SVM models and validation with nested k-fold CV. 
 
+library(pROC)
+
 X <- sam.iris[, names(sam.iris) != "sam.lab"]
 
 y <- as.character(sam.iris$sam.lab)
@@ -131,6 +137,7 @@ full.pred.table <- do.call(rbind, all.pred.tables)
 res.roc <- roc(full.pred.table$y.test, full.pred.table$y.pred)
 
 plot(res.roc, col = "red") 
+
 # lines(perf, col = "green")
 
 auc.value <- auc(res.roc)

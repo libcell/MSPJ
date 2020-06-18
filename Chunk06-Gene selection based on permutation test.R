@@ -10,7 +10,7 @@
 ################################################################################
 
 ### ****************************************************************************
-### code chunk number 05: Analysis of DEGs based permutation test.
+### code chunk number 06: Analysis of DEGs based permutation test.
 ### ****************************************************************************
 
 ### Reference: Implementing a class of permutation tests: the coin package, 2008. 
@@ -24,6 +24,8 @@
 ### Step-01. Loading the gene expression data in *.csv
 
 input <- get(load("input.RData"))
+
+print(input[1:6, 1:6])
 
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
