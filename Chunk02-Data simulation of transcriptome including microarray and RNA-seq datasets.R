@@ -13,8 +13,7 @@
 ### code chunk number 02: Data simulation of transcriptome.
 ### ****************************************************************************
 
-# - R package: madsim, compcodeR, and LIMMA. 
-
+### R packages used in this step: madsim, compcodeR, and LIMMA. 
 # For windows, work directory. 
 # setwd("F:/") 
 
