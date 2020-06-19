@@ -14,7 +14,9 @@
 ### ****************************************************************************
 
 ### ------------------------------------------------------------------------ ###
-### Step-01. Determing the final differentially expressed genes.  
+### Step-01. Determing DEGs by using edgeR method.  
+
+library("edgeR")
 
 count <- get(load("count.RData"))
 
@@ -22,54 +24,33 @@ count[1:6, 1:6]
 
 lable <- get(load("lable.RData"))
 
-lable
+group <- as.factor(lable$lable)
 
-group_list <- as.factor(lable$lable)
+y <- DGEList(counts = count, group = group)
 
-pvalue  <- 0.05
+keep <- filterByExpr(y)
 
-foldChange <- 1
+y <- y[keep, , keep.lib.sizes = FALSE]
 
-
-library("edgeR")
+y <- calcNormFactors(y)
 
 # preparing the design matrix
 
-samples <- colnames(count)
-
-types <- group_list
-
-data.frame(Sample = samples, Type = types)
-
-design <- model.matrix(~ group_list)
+design <- model.matrix( ~ group)
 
 # estimating the dispersion
 
-y <- estimateDisp(count, design, robust = TRUE)
+y <- estimateDisp(y, design, robust = TRUE)
 
 y$common.dispersion
 
-plotBCV(y) # error
+plotBCV(y)
 
-# differential expression
+# Differential expression by performing the likelihood ratio test. 
 
 fit <- glmFit(y, design)
 
-
-x <- count
-
-group <- group_list
-
-y <- DGEList(counts = x, group = group)
-
-keep <- filterByExpr(y)
-y <- y[keep, , keep.lib.sizes=FALSE]
-y <- calcNormFactors(y)
-design <- model.matrix(~group)
-y <- estimateDisp(y,design)
-
-fit <- glmFit(y,design)
-lrt <- glmLRT(fit,coef=2)
+lrt <- glmLRT(fit, coef=2)
 topTags(lrt)
 
 
