@@ -10,37 +10,68 @@
 ################################################################################
 
 ### ****************************************************************************
-### code chunk number 07: MSP method and its performance evaluation.
+### code chunk number 08: Three classic methods, including LIMMA, edgeR and DESeq2.
 ### ****************************************************************************
 
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Determing the final differentially expressed genes.  
 
-#. load("setlist.RData")
-#. deg.meta <- setlist$Meta.analysis
-#. deg.svm <- setlist$SVM.RFE
-#. deg.per <- setlist$Permutation
+count <- get(load("count.RData"))
 
-deg.int <- intersect(intersect(deg.meta, deg.svm), deg.per)
+count[1:6, 1:6]
 
-table(as.numeric(gsub("g", "", deg.int)) > 500)
+lable <- get(load("lable.RData"))
 
-table(as.numeric(gsub("g", "", deg.meta)) > 500)
-table(as.numeric(gsub("g", "", deg.svm)) > 500)
-table(as.numeric(gsub("g", "", deg.per)) > 500)
+lable
 
-setlist <- list(Meta.analysis = deg.meta, 
-                SVM.RFE = deg.svm, 
-                Permutation = deg.per)
+group_list <- as.factor(lable$lable)
 
-save(setlist, file = "setlist.RData")
+pvalue  <- 0.05
 
-venn(setlist, 
-     lty = 0, 
-     col = "navyblue", 
-     zcolor = 1:3, 
-     lwd = 2, 
-     box = FALSE)
+foldChange <- 1
+
+
+library("edgeR")
+
+# preparing the design matrix
+
+samples <- colnames(count)
+
+types <- group_list
+
+data.frame(Sample = samples, Type = types)
+
+design <- model.matrix(~ group_list)
+
+# estimating the dispersion
+
+y <- estimateDisp(count, design, robust = TRUE)
+
+y$common.dispersion
+
+plotBCV(y) # error
+
+# differential expression
+
+fit <- glmFit(y, design)
+
+
+x <- count
+
+group <- group_list
+
+y <- DGEList(counts = x, group = group)
+
+keep <- filterByExpr(y)
+y <- y[keep, , keep.lib.sizes=FALSE]
+y <- calcNormFactors(y)
+design <- model.matrix(~group)
+y <- estimateDisp(y,design)
+
+fit <- glmFit(y,design)
+lrt <- glmLRT(fit,coef=2)
+topTags(lrt)
+
 
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
@@ -139,6 +170,8 @@ roc.df <- data.frame(TPP = res.roc$sensitivities * 100,
                      FPP = (1 - res.roc$specificities) * 100, 
                      Thresholds = res.roc$thresholds)
 
+# windowsFonts(A = windowsFont("Times New Roman"))
+
 plot.roc(res.roc, 
          col = "#377EB8", 
          legacy.axes = TRUE, 
@@ -167,8 +200,8 @@ plot.roc(res.roc,
          add = TRUE) 
 
 legend("bottomright", 
-       legend = c("Model A", "Model B"), 
-       col = c(1, 2), 
+       legend = c("SVM-RFE", "LIMMA", "edgeR", "DESeq2"), 
+       col = mypal2[1:4], 
        lwd = 4)
 
 par(pty = "m")
