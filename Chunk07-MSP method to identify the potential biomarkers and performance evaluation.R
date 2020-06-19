@@ -40,7 +40,7 @@ venn(setlist,
      col = "navyblue", 
      zcolor = 1:3, 
      lwd = 2, 
-     box = F)
+     box = FALSE)
 
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
