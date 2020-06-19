@@ -10,67 +10,34 @@
 ################################################################################
 
 ### ****************************************************************************
-### code chunk number 08: Three classic methods, including LIMMA, edgeR and DESeq2.
+### code chunk number 07: MSP method and its performance evaluation..
 ### ****************************************************************************
 
-### ------------------------------------------------------------------------ ###
-### Step-01. Determing DEGs by using edgeR method.  
+#. load("setlist.RData")
+#. deg.meta <- setlist$Meta.analysis
+#. deg.svm <- setlist$SVM.RFE
+#. deg.per <- setlist$Permutation
 
-library("edgeR")
+deg.int <- intersect(intersect(deg.meta, 
+                               deg.svm), 
+                     deg.per)
 
-count <- get(load("count.RData"))
+#. table(as.numeric(gsub("g", "", deg.meta)) > 500)
+#. table(as.numeric(gsub("g", "", deg.svm)) > 500)
+#. table(as.numeric(gsub("g", "", deg.per)) > 500)
 
-count[1:6, 1:6]
+setlist <- list(Meta.analysis = deg.meta, 
+                SVM.RFE = deg.svm, 
+                Permutation = deg.per)
 
-lable <- get(load("lable.RData"))
+save(setlist, file = "setlist.RData")
 
-group <- as.factor(lable$lable)
-
-y <- DGEList(counts = count, group = group)
-
-keep <- filterByExpr(y)
-
-y <- y[keep, , keep.lib.sizes = FALSE]
-
-y <- calcNormFactors(y)
-
-# preparing the design matrix
-
-design <- model.matrix( ~ group)
-
-# estimating the dispersion
-
-y <- estimateDisp(y, design, robust = TRUE)
-
-y$common.dispersion
-
-plotBCV(y)
-
-# Differential expression by performing the likelihood ratio test. 
-
-fit <- glmFit(y, design)
-
-lrt <- glmLRT(fit, coef=2)
-topTags(lrt)
-
-
-### End of Step-01.
-### ------------------------------------------------------------------------ ###
-
-### ------------------------------------------------------------------------ ###
-### Step-02. preparing the datasets to be used in modeling. 
-
-eset <- mcr.matrix
-# eset <- seq.matrix
-
-sam.lab <- sapply(colnames(eset), function(x) strsplit(x, "-")[[1]][1])
-
-names(sam.lab) <- NULL
-
-eset.mat <- as.data.frame(t(eset))
-# eset.mat[1:9, 1:6]
-
-input <- as.data.frame(cbind(sam.lab, eset.mat))
+venn(setlist, 
+     lty = 0, 
+     col = "navyblue", 
+     zcolor = 1:3, 
+     lwd = 2, 
+     box = FALSE)
 
 ### End of Step-02.
 ### ------------------------------------------------------------------------ ###

@@ -10,7 +10,7 @@
 ################################################################################
 
 ### ****************************************************************************
-### code chunk number 07: Gene selection based on three classic methods.
+### code chunk number 08: Gene selection based on three classic methods.
 ### ****************************************************************************
 
 # input: eset - a gene expression matrix, genes in lines and samples in columns. 
@@ -19,7 +19,7 @@
 ### ------------------------------------------------------------------------ ###
 ### Step-01. LIMMA method for RNA-seq data. 
 
-input <- get(load("input.RData"))
+
 
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
@@ -27,50 +27,63 @@ input <- get(load("input.RData"))
 ### ------------------------------------------------------------------------ ###
 ### Step-02. edgeR method for RNA-seq data. 
 
-# using coin package. 
-# independence_test(y ~ tr, alternative = "greater")  # one-tailed
-# independence_test(y ~ tr, alternative = "two.sided")  # two-tailed
+### ------------------------------------------------------------------------ ###
+### Step-01. Determing DEGs by using edgeR method.  
 
-library(FSA)
+library("edgeR")
 
-all.genes <- names(input)[-1]
+count <- get(load("count.RData"))
 
-deg.count <- NULL
+count[1:6, 1:6]
 
-for (g in all.genes) {
-  
-  tmp <- Summarize(get(g) ~ sam.lab, data = input, digits = 3)
-  
-  # print(tmp)
-  # boxplot(get(g) ~ sam.lab, data = input)
-  
-  deg.per <- try(independence_test(get(g) ~ sam.lab, 
-                                   data = input), 
-                 silent = FALSE)
-  
-  # deg.Z <- deg.per@statistic@teststatistic
-  deg.p <- deg.per@distribution@pvalue(deg.per@statistic@teststatistic)
-  
-  # This variable, deg.count, stores all the differentially expressed genes.
-  
-  if (!is.na(deg.p) & deg.p < 0.01) deg.count <- c(deg.count, g) else next
-  
-}
+lable <- get(load("lable.RData"))
 
-deg.per <- deg.count; rm(deg.count)
+group <- as.factor(lable$lable)
 
-deg.per
+# filtering the counts with low values 
 
-# For permutation test of independence
-# For two groups as independent samples, and tests if there is a difference in values between the two groups.
+cpms  <- cpm(count)
 
-# For permutation test of symmetry. 
-# For two groups as having paired or repeated data, paired within Individual.
+keep <- rowSums(cpms>1) >= 3
 
-# deg.per <- symmetry_test(g10000 ~ sam.lab | Individual, data = input)
+count <- count[keep,]
 
-#. class(deg.per)
-#. getMethod("show","ScalarIndependenceTest")
+# Generating the DGEList object
+
+y <- DGEList(counts = count, group = group)
+
+# Data normalization
+
+y <- calcNormFactors(y, method = "upperquartile")
+
+# preparing the design matrix
+
+design <- model.matrix( ~ group)
+
+# estimating the dispersion
+
+y <- estimateDisp(y, design, robust = TRUE)
+
+y$common.dispersion
+
+plotBCV(y)
+
+# Differential expression by performing the likelihood ratio test. 
+
+fit <- glmFit(y, design)
+
+lrt <- glmLRT(fit, coef = 1)
+
+degTable <- topTags(lrt, n = nrow(count))
+
+degTable <- as.data.frame(degTable)
+
+deg.edgeR <- degTable[abs(degTable$logFC) > 0.5849625 & degTable$PValue < 0.05, ]
+
+dim(deg.edgeR)
+
+### End of Step-01.
+### ------------------------------------------------------------------------ ###
 
 ### End of Step-02.
 ### ------------------------------------------------------------------------ ###
