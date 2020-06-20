@@ -54,7 +54,7 @@ y <- DGEList(counts = count, group = group)
 
 # Data normalization
 
-y <- calcNormFactors(y, method = "upperquartile")
+norm.y <- calcNormFactors(y, method = "upperquartile")
 
 # preparing the design matrix
 
@@ -62,7 +62,7 @@ design <- model.matrix( ~ group)
 
 # estimating the dispersion
 
-y <- estimateDisp(y, design, robust = TRUE)
+y <- estimateDisp(norm.y, design, robust = TRUE)
 
 y$common.dispersion
 
@@ -85,6 +85,66 @@ dim(deg.edgeR)
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
 
+### ------------------------------------------------------------------------ ###
+### Step-02. LIMMA method for RNA-seq data. 
+
+eset <- count
+
+library(limma)
+
+dt <- voom(norm.y, design, plot = FALSE)
+
+
+
+
+
+
+
+
+
+if (all(as.integer(eset) == as.numeric(eset))) {
+  
+  #-- Filtering the genes with low-expression levels. 
+  
+  cpms <- cpm(eset)
+  keep <- rowSums(cpms>1) >= 3
+  eset <- eset[keep, ]
+  
+  #-- Data normalization for gene expression matrix filled by counts. 
+  
+  DGElist <- DGEList(counts = eset)
+  
+  DGElist <- calcNormFactors(DGElist, method = "upperquartile")
+  
+  #. boxplot(log2(DGElist$count))
+  
+  # plotMDS(DGElist)
+  
+  eset <- DGElist$count  
+  
+}
+
+
+
+
+
+
+
+
+
+
+fit <- lmFit(dt, design)
+
+fit2 <- eBayes(fit, trend = FALSE)  
+
+limmaDEGs <- topTable(fit2, coef = 2, number = Inf)
+
+deg.limma <- limmaDEGs[abs(limmaDEGs$logFC) > 0.58 & limmaDEGs$adj.P.Val < 0.05, ]
+
+deg.limma <- rownames(deg.limma)
+
+deg.limma
+
 ### End of Step-02.
 ### ------------------------------------------------------------------------ ###
 
@@ -101,8 +161,6 @@ condition <- as.factor(group)
 
 colData <- data.frame(row.names = colnames(count), condition)
 
-#colData <- data.frame(row.names=colnames(mycounts), condition2)
-
 dds <- DESeqDataSetFromMatrix(countData = count,
                               colData = colData,
                               design = ~ condition)
@@ -112,10 +170,10 @@ dds$condition <- relevel(dds$condition,
 
 dds <- DESeq(dds)
 
-allDEG2 <- as.data.frame(results(dds))
-allDEG2 <- allDEG2[allDEG2$baseMean > 0, ] 
+deg2 <- as.data.frame(results(dds))
+deg2 <- deg2[deg2$baseMean > 0, ] 
 
-deg.deseq2 <- allDEG2[abs(allDEG2$log2FoldChange) > 1 & allDEG2$pvalue < 0.05, ]
+deg.deseq2 <- deg2[abs(deg2$log2FoldChange) > 1 & deg2$pvalue < 0.05, ]
 
 nrow(deg.deseq2)
 
