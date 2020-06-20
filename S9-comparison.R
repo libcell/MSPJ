@@ -6,11 +6,11 @@ limma <- c("g423", "g35", "g129", "g137", "g449")
 
 
 
-for (a in 2:200) {
+for (a in 3:200) {
   
   library(pROC)
   
-  sam.iris <- input[, c("sam.lab", deg.deseq2[1:a])]
+  sam.iris <- input[, c("sam.lab", deg.deseq2[2:a])]
   
   X <- sam.iris[, names(sam.iris) != "sam.lab"]
   
@@ -98,10 +98,15 @@ for (a in 2:200) {
 }
 
 
+f <- function(x) x[1] / x[2]
 
+f(table(gsub("g", "", deg.int) < 500))
 
+f(table(gsub("g", "", deg.limma) < 500))
 
+f(table(gsub("g", "", deg.deseq2) < 500))
 
+f(table(gsub("g", "", deg.edgeR) < 500))
 
 
 
