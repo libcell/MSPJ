@@ -40,8 +40,7 @@ if (all(as.integer(eset) == as.numeric(eset))) {
   DGElist <- calcNormFactors(DGElist, method = "upperquartile")
   
   #. boxplot(log2(DGElist$count))
-  
-  # plotMDS(DGElist)
+  #. plotMDS(DGElist)
   
   eset <- DGElist$count  
   
