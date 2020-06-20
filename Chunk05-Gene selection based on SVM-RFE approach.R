@@ -20,25 +20,10 @@
 # output: degs - a genelist, including the gene names, pooled SMDs, and so on. 
 
 ### ------------------------------------------------------------------------ ###
-### Step-01. Loading the gene expression data in *.csv
+### Step-01. Data preprocessing for whole dataset, seq.matrix or mcr.matrix. 
 
 #-- seq.matrix.RData: simulated RNA-seq data; 
 #-- mcr.matrix.RData: simulated microarray data. 
-
-# Selecting the dataset (microarray or RNA-seq). 
-
-if (!exists("eset")) {
-  
-  eset <- mcr.matrix
-  # eset <- seq.matrix
-  
-} 
-
-### End of Step-01.
-### ------------------------------------------------------------------------ ###
-
-### ------------------------------------------------------------------------ ###
-### Step-02. Data preprocessing for seq.matrix. 
 
 if (all(as.integer(eset) == as.numeric(eset))) {
   
@@ -62,11 +47,11 @@ if (all(as.integer(eset) == as.numeric(eset))) {
   
 }
 
-### End of Step-02.
+### End of Step-01.
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Step-03. Preparing the data file used for SVM-RFE gene selection.
+### Step-02. Preparing the data file used for SVM-RFE gene selection.
 
 sam.lab <- sapply(colnames(eset), function(x) strsplit(x, "-")[[1]][1])
 
@@ -82,11 +67,11 @@ print(input[1:10, 1:10])
 
 save(input, file = "input.RData")
 
-### End of Step-03.
+### End of Step-02.
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Step-04. Gene selection using simple SVM-RFE algorithm.
+### Step-03. Gene selection using simple SVM-RFE algorithm.
 
 set.seed(1)
 
@@ -95,11 +80,11 @@ set.seed(1)
 
 ranked.feat <- svmRFE(input, k = 5, halve.above = 100)
 
-### End of Step-04.
+### End of Step-03.
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Step-05. Gene selection using multiple SVM-RFE algorithm.
+### Step-04. Gene selection using multiple SVM-RFE algorithm.
 
 # 1) Generating multiple sub-groups based resampling, and setting up cross validation.
 
