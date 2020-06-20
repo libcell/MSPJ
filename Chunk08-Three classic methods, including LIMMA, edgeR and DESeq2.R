@@ -84,59 +84,7 @@ deg.edgeR <- rownames(deg.edgeR)
 
 ######################
 
-# For real dataset. 
 
-count <- get(load("count.RData"))
-
-count[1:6, 1:6]
-
-lable <- get(load("lable.RData"))
-
-group <- as.factor(lable$lable)
-
-# filtering the counts with low values 
-
-cpms  <- cpm(count)
-
-keep <- rowSums(cpms>1) >= 3
-
-count <- count[keep, ]
-
-# Generating the DGEList object
-
-y <- DGEList(counts = count, group = group)
-
-# Data normalization
-
-norm.y <- calcNormFactors(y, method = "upperquartile")
-
-# preparing the design matrix
-
-design <- model.matrix( ~ group)
-
-# estimating the dispersion
-
-y <- estimateDisp(norm.y, design, robust = TRUE)
-
-y$common.dispersion
-
-plotBCV(y)
-
-# Differential expression by performing the likelihood ratio test. 
-
-fit <- glmFit(y, design)
-
-lrt <- glmLRT(fit, coef = 2)
-
-degTable <- topTags(lrt, n = nrow(count))
-
-degTable <- as.data.frame(degTable)
-
-deg.edgeR <- degTable[abs(degTable$logFC) > 1 & degTable$PValue < 0.05, ]
-
-deg.edgeR <- deg.edgeR[rev(order(abs(deg.edgeR$logFC))), ]
-
-deg.edgeR <- rownames(deg.edgeR)
 
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
@@ -229,31 +177,7 @@ deg.deseq2 <- rownames(deg.deseq2)
 
 #################################################################
 
-library(DESeq2)
 
-group <- as.vector(lable$lable)
-
-group[group == "Control"] <- "untreated"
-
-condition <- as.factor(group)
-
-colData <- data.frame(row.names = colnames(count), condition)
-
-dds <- DESeqDataSetFromMatrix(countData = count,
-                              colData = colData,
-                              design = ~ condition)
-
-dds$condition <- relevel(dds$condition, 
-                         ref = "untreated") # Designated control group
-
-dds <- DESeq(dds)
-
-deg2 <- as.data.frame(results(dds))
-deg2 <- deg2[deg2$baseMean > 0, ] 
-
-deg.deseq2 <- deg2[abs(deg2$log2FoldChange) > 1 & deg2$pvalue < 0.05, ]
-
-nrow(deg.deseq2)
 
 ### End of Step-03.
 ### ------------------------------------------------------------------------ ###
@@ -269,3 +193,12 @@ intersect(deg.int, deg.edgeR)
 intersect(deg.int, deg.deseq2)
 
 intersect(deg.deseq2, deg.edgeR)
+
+
+
+### For us. 
+
+deg.int <- deg.svm[sort(match(deg.int, deg.svm))]
+
+
+
