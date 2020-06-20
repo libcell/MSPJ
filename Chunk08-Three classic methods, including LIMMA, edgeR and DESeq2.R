@@ -46,7 +46,7 @@ cpms  <- cpm(count)
 
 keep <- rowSums(cpms>1) >= 3
 
-count <- count[keep,]
+count <- count[keep, ]
 
 # Generating the DGEList object
 
@@ -72,13 +72,13 @@ plotBCV(y)
 
 fit <- glmFit(y, design)
 
-lrt <- glmLRT(fit, coef = 1)
+lrt <- glmLRT(fit, coef = 2)
 
 degTable <- topTags(lrt, n = nrow(count))
 
 degTable <- as.data.frame(degTable)
 
-deg.edgeR <- degTable[abs(degTable$logFC) > 0.5849625 & degTable$PValue < 0.05, ]
+deg.edgeR <- degTable[abs(degTable$logFC) > 1 & degTable$PValue < 0.05, ]
 
 dim(deg.edgeR)
 
@@ -91,6 +91,33 @@ dim(deg.edgeR)
 ### ------------------------------------------------------------------------ ###
 ### Step-03. DESeq2 method for RNA-seq data. 
 
+library(DESeq2)
+
+group <- as.vector(lable$lable)
+
+group[group == "Control"] <- "untreated"
+
+condition <- as.factor(group)
+
+colData <- data.frame(row.names = colnames(count), condition)
+
+#colData <- data.frame(row.names=colnames(mycounts), condition2)
+
+dds <- DESeqDataSetFromMatrix(countData = count,
+                              colData = colData,
+                              design = ~ condition)
+
+dds$condition <- relevel(dds$condition, ref = "untreated") # 指定哪一组作为对照组
+
+dds <- DESeq(dds)
+
+allDEG2 <- as.data.frame(results(dds))
+allDEG2 <- allDEG2[allDEG2$baseMean>0,] 
+
+
+diff_signif2 <- allDEG2[(allDEG2$padj < pvalue & 
+                           (allDEG2$log2FoldChange>foldChange | allDEG2$log2FoldChange<(-foldChange))),]
+DESeq2DEGs <- diff_signif2[order(diff_signif2$log2FoldChange),]
 
 
 ### End of Step-03.
