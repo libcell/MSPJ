@@ -32,12 +32,9 @@ mypal2 <- pal_npg("nrc", alpha = 0.7)(10)
 
 ### @@@@@@@@@@@@@@ Selecting the dataset (microarray/RNA-seq) @@@@@@@@@@@@@@ ###
 ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
-if (!exists("eset")) {
-  
-  eset <- mcr.matrix
-  # eset <- seq.matrix
-  
-} 
+
+# eset <- mcr.matrix
+eset <- seq.matrix
 
 print(eset[1:6, 1:6])
 
