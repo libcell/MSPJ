@@ -32,6 +32,60 @@
 
 library("edgeR")
 
+######################
+
+# For simulated dataset. !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+count <- eset
+
+group <- input$sam.lab
+
+cpms  <- cpm(count)
+
+keep <- rowSums(cpms>1) >= 3
+
+count <- count[keep, ]
+
+y <- DGEList(counts = count, group = group)
+
+# Data normalization
+
+norm.y <- calcNormFactors(y, method = "upperquartile")
+
+# preparing the design matrix
+
+design <- model.matrix( ~ group)
+
+# estimating the dispersion
+
+y <- estimateDisp(norm.y, design, robust = TRUE)
+
+y$common.dispersion
+
+plotBCV(y)
+
+# Differential expression by performing the likelihood ratio test. 
+
+fit <- glmFit(y, design)
+
+lrt <- glmLRT(fit, coef = 2)
+
+degTable <- topTags(lrt, n = nrow(count))
+
+degTable <- as.data.frame(degTable)
+
+deg.edgeR <- degTable[abs(degTable$logFC) > 1 & degTable$PValue < 0.05, ]
+
+deg.edgeR <- deg.edgeR[rev(order(abs(deg.edgeR$logFC))), ]
+
+deg.edgeR <- rownames(deg.edgeR)
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+######################
+
+# For real dataset. 
+
 count <- get(load("count.RData"))
 
 count[1:6, 1:6]
@@ -80,7 +134,9 @@ degTable <- as.data.frame(degTable)
 
 deg.edgeR <- degTable[abs(degTable$logFC) > 1 & degTable$PValue < 0.05, ]
 
-dim(deg.edgeR)
+deg.edgeR <- deg.edgeR[rev(order(abs(deg.edgeR$logFC))), ]
+
+deg.edgeR <- rownames(deg.edgeR)
 
 ### End of Step-01.
 ### ------------------------------------------------------------------------ ###
@@ -88,19 +144,9 @@ dim(deg.edgeR)
 ### ------------------------------------------------------------------------ ###
 ### Step-02. LIMMA method for RNA-seq data. 
 
-eset <- count
+# eset <- count
 
 library(limma)
-
-dt <- voom(norm.y, design, plot = FALSE)
-
-
-
-
-
-
-
-
 
 if (all(as.integer(eset) == as.numeric(eset))) {
   
@@ -120,17 +166,15 @@ if (all(as.integer(eset) == as.numeric(eset))) {
   
   # plotMDS(DGElist)
   
-  eset <- DGElist$count  
+  tmp <- DGElist$count  
+  
+  dt <- voom(tmp, design, plot = FALSE)
+  
+} else {
+  
+  dt <- eset
   
 }
-
-
-
-
-
-
-
-
 
 
 fit <- lmFit(dt, design)
@@ -139,17 +183,51 @@ fit2 <- eBayes(fit, trend = FALSE)
 
 limmaDEGs <- topTable(fit2, coef = 2, number = Inf)
 
-deg.limma <- limmaDEGs[abs(limmaDEGs$logFC) > 0.58 & limmaDEGs$adj.P.Val < 0.05, ]
+deg.limma <- limmaDEGs[abs(limmaDEGs$logFC) > 1 & limmaDEGs$adj.P.Val < 0.05, ]
+
+deg.limma <- deg.limma[rev(order(abs(deg.limma$logFC))), ]
 
 deg.limma <- rownames(deg.limma)
-
-deg.limma
 
 ### End of Step-02.
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
 ### Step-03. DESeq2 method for RNA-seq data. 
+
+###############################################################
+### for simulated dataset. 
+library(DESeq2)
+
+group <- as.vector(group)
+
+group[group == "Control"] <- "untreated"
+
+condition <- as.factor(group)
+
+colData <- data.frame(row.names = colnames(count), condition)
+
+dds <- DESeqDataSetFromMatrix(countData = count,
+                              colData = colData,
+                              design = ~ condition)
+
+dds$condition <- relevel(dds$condition, 
+                         ref = "untreated") # Designated control group
+
+dds <- DESeq(dds)
+
+deg2 <- as.data.frame(results(dds))
+deg2 <- deg2[deg2$baseMean > 0, ] 
+
+deg.deseq2 <- deg2[abs(deg2$log2FoldChange) > 1 & deg2$pvalue < 0.05, ]
+
+deg.deseq2 <- deg.deseq2[rev(order(abs(deg.deseq2$log2FoldChange))), ]
+
+deg.deseq2 <- rownames(deg.deseq2)
+
+
+
+#################################################################
 
 library(DESeq2)
 
@@ -179,3 +257,15 @@ nrow(deg.deseq2)
 
 ### End of Step-03.
 ### ------------------------------------------------------------------------ ###
+
+deg.final <- intersect(intersect(deg.limma, deg.edgeR), deg.deseq2)
+
+intersect(deg.int, deg.final)
+
+intersect(deg.int, deg.limma)
+
+intersect(deg.int, deg.edgeR)
+
+intersect(deg.int, deg.deseq2)
+
+intersect(deg.deseq2, deg.edgeR)

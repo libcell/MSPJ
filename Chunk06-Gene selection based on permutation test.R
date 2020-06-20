@@ -23,7 +23,7 @@
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Loading the gene expression data in *.csv
 
-input <- get(load("input.RData"))
+#. input <- get(load("input.RData"))
 
 print(input[1:6, 1:6])
 
