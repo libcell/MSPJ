@@ -17,7 +17,7 @@
 # output: degs - a genelist, including the gene names, pooled SMDs, and so on. 
 
 ### ------------------------------------------------------------------------ ###
-### Step-01. LIMMA method for RNA-seq data. 
+### Step-01. LIMMA method for DNA microarray and RNA-seq data. 
 
 
 
