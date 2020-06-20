@@ -107,18 +107,17 @@ dds <- DESeqDataSetFromMatrix(countData = count,
                               colData = colData,
                               design = ~ condition)
 
-dds$condition <- relevel(dds$condition, ref = "untreated") # 指定哪一组作为对照组
+dds$condition <- relevel(dds$condition, 
+                         ref = "untreated") # Designated control group
 
 dds <- DESeq(dds)
 
 allDEG2 <- as.data.frame(results(dds))
-allDEG2 <- allDEG2[allDEG2$baseMean>0,] 
+allDEG2 <- allDEG2[allDEG2$baseMean > 0, ] 
 
+deg.deseq2 <- allDEG2[abs(allDEG2$log2FoldChange) > 1 & allDEG2$pvalue < 0.05, ]
 
-diff_signif2 <- allDEG2[(allDEG2$padj < pvalue & 
-                           (allDEG2$log2FoldChange>foldChange | allDEG2$log2FoldChange<(-foldChange))),]
-DESeq2DEGs <- diff_signif2[order(diff_signif2$log2FoldChange),]
-
+nrow(deg.deseq2)
 
 ### End of Step-03.
 ### ------------------------------------------------------------------------ ###
