@@ -4,8 +4,6 @@ int <- c("g1", "g224", "g288", "g377", "g52")
 
 limma <- c("g423", "g35", "g129", "g137", "g449")
 
-
-
 for (a in 3:200) {
   
   library(pROC)
@@ -98,7 +96,7 @@ for (a in 3:200) {
 }
 
 
-f <- function(x) x[1] / x[2]
+f <- function(x) x[2] / (x[1] + x[2])
 
 f(table(gsub("g", "", deg.int) < 500))
 
@@ -107,6 +105,28 @@ f(table(gsub("g", "", deg.limma) < 500))
 f(table(gsub("g", "", deg.deseq2) < 500))
 
 f(table(gsub("g", "", deg.edgeR) < 500))
+
+
+
+
+data <- iris[1:100, ]
+
+train.id <- sample(1:100, 50)
+
+train.set <- data[train.id, ]
+
+test.set <- data[-train.id, -5]
+
+glm.out <- glm(Species ~ Sepal.Width + Sepal.Length + Petal.Width + Petal.Length,
+               data = train.set,
+               family = binomial) # family = binomial required for logistic regression
+
+summary(glm.out)
+
+plant1 <- data.frame(Sepal.Length=6.4, Sepal.Width=2.8, Petal.Length=4.6, Petal.Width=1.8)
+
+predict(glm.out, test.set[, -5], type="response")
+
 
 
 
