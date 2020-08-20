@@ -14,7 +14,7 @@
 ### ****************************************************************************
 
 # Setting the work directory, under the Windows Operation System. 
-# setwd("F:/")
+setwd("E:/R-work-dir")
 
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Install all R packages required in this step. 
