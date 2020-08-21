@@ -4,8 +4,8 @@
 #  &&&&&&..&&&&&&  % Author: Bo Li, Huachun Yin, Jingxin Tao, Youjin Hao       #
 #  &&&&&&&&&&&&&&  % Date: Jun. 1st, 2020                                      #
 #   &&&&&&&&&&&&   %                                                           #
-#     &&&&&&&&     % Environment: R version 3.5.3;                             #
-#       &&&&       % Platform: x86_64-pc-linux-gnu (64-bit)                    #
+#     &&&&&&&&     % Environment: R version 3.6.0;                             #
+#       &&&&       % x86_64-w64-mingw32/x64 (64-bit)                           #
 #        &         %                                                           #
 ################################################################################
 
@@ -196,5 +196,6 @@ intersect(deg.deseq2, deg.edgeR)
 
 deg.int <- deg.svm[sort(match(deg.int, deg.svm))]
 
-
+### End of this chunk. 
+### ****************************************************************************
 
