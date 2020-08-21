@@ -1,4 +1,61 @@
 
+################################################################################
+#    &&&....&&&    % Project: MSPJ approach for identification of DEGs         #
+#  &&&&&&..&&&&&&  % Author: Bo Li, Huachun Yin, Jingxin Tao, Youjin Hao       #
+#  &&&&&&&&&&&&&&  % Date: Jun. 1st, 2020                                      #
+#   &&&&&&&&&&&&   %                                                           #
+#     &&&&&&&&     % Environment: R version 3.6.0;                             #
+#       &&&&       % x86_64-w64-mingw32/x64 (64-bit)                           #
+#        &         %                                                           #
+################################################################################
+
+### ****************************************************************************
+### code chunk number 09: Other methods used for gene selection.
+### ****************************************************************************
+
+# input: eset - a gene expression matrix, genes in lines and samples in columns. 
+# output: degs - a genelist, including the gene names, pooled SMDs, and so on. 
+
+### ------------------------------------------------------------------------ ###
+### Step-01. Preparing the packages used in gene selection. 
+
+library(limma)
+library(samr)
+library(pROC)
+library(simpleaffy)
+library(FSA)
+
+library(openxlsx)
+
+data <- read.xlsx("Simulation_of_microarray_data.xlsx", 1)
+
+c.split <- function(x) strsplit(x, ":")[[1]][1]
+e.split <- function(x) strsplit(x, ":")[[1]][2]
+
+num1 <- unlist(lapply(data$Sample, c.split))
+num2 <- unlist(lapply(data$Sample, e.split))
+
+red.ACC <- matrix(NA, ncol = 16)
+
+colnames(red.ACC) <- c("simulation.num", "MSP.num", "MSP.AUC", "MSP.ACC", 
+                       "limma.num", "limma.AUC", "limma.ACC", "SAM.num", 
+                       "SAM.AUC", "SAM.ACC", "t-test.num", "t-test.AUC", 
+                       "t-test.ACC", "t-test & FC.num", "t-test & FC.AUC", 
+                       "t-test & FC.ACC")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 int <- c("g1", "g224", "g288", "g377", "g52")
 
