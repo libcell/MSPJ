@@ -273,8 +273,8 @@ for (num in 1:76) {
   ##########
   
   
-  label<-gsub("Control",2,group)
-  label<-gsub("Experimental",1,label)
+  label<-gsub("Control", 2, group)
+  label<-gsub("Experimental", 1, label)
   
   samfit<-SAM(eset,label,resp.type="Two class unpaired")
   
