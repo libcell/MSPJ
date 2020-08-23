@@ -18,6 +18,7 @@ expre <- expre[!duplicated(expre[,1]), ]
 dim(expre)
 rownames(expre) <- expre$Cell
 
+
 #expre <- aggregate(.~Cell,expre ,mean)
 
 
