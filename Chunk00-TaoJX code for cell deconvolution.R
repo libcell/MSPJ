@@ -1,7 +1,5 @@
 
 
-
-
 setwd("/Users/touyasushishin/Desktop")
 
 
