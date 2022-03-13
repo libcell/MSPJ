@@ -731,7 +731,7 @@ Jscore <- function(x, y) {
   return(z)
 }
 
-#####Function-7.1 the matrix of Jaccard score  between various methods
+#####Function-7.2 the matrix of Jaccard score  between various methods
 
 Jscaore.YHC <- function(x) {
   n <- length(x)
