@@ -1,5 +1,5 @@
 # MSPJ
- Meta-SVM/RFE-Permutation joint method for identification of DEGs, **MSPJ**
+**MSPJ**: discovering potential biomarkers in small gene expression datasets via ensemble learning
 
 - Huachun Yin, Jingxin Tao, Bo Li, *et al.*
 
