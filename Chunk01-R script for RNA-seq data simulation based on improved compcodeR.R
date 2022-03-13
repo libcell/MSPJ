@@ -13,7 +13,16 @@
 ### ****************************************************************************
 
 # Setting the work directory, under the Windows Operation System. 
-# setwd("F:/")
+
+setwd("..")
+if (!dir.exists("MSPJ")) {
+  dir.create("MSPJ")
+  setwd("MSPJ")
+} else {
+  setwd("MSPJ")
+}
+
+# getwd()
 
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Install all R packages required in this step. 
