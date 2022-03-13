@@ -1,11 +1,11 @@
 
 ################################################################################
 #    &&&....&&&    % Project: MSPJ approach for identification of DEGs         #
-#  &&&&&&..&&&&&&  % Author: Bo Li, Huachun Yin, Jingxin Tao, Youjin Hao       #
-#  &&&&&&&&&&&&&&  % Date: Jun. 1st, 2020                                      #
+#  &&&&&&..&&&&&&  % Author: Bo Li, Huachun Yin, Jingxin Tao   
+#  &&&&&&&&&&&&&&  % Date: Mar. 1st, 2022                                      #
 #   &&&&&&&&&&&&   %                                                           #
-#     &&&&&&&&     % Environment: R version 3.6.0;                             #
-#       &&&&       % x86_64-w64-mingw32/x64 (64-bit)                           #
+#     &&&&&&&&     % Environment: R version 3.5.3;                             #
+#       &&&&       % Platform: x86_64-pc-linux-gnu (64-bit)                    #
 #        &         %                                                           #
 ################################################################################
 
@@ -23,7 +23,7 @@
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Loading the gene expression data in *.csv
 
-#. input <- get(load("input.RData"))
+input <- get(load("input.RData"))
 
 print(input[1:6, 1:6])
 
@@ -36,13 +36,13 @@ print(input[1:6, 1:6])
 # using coin package. 
 # independence_test(y ~ tr, alternative = "greater")  # one-tailed
 # independence_test(y ~ tr, alternative = "two.sided")  # two-tailed
+pvalue<-0.05
+
+#set the cutoff of p value
 
 library(FSA)
-
 all.genes <- names(input)[-1]
-
 gene.count <- length(all.genes)
-
 deg.count <- NULL
 
 i <- 0
@@ -56,11 +56,11 @@ for (g in all.genes) {
   setTxtProgressBar(pb, i)
   
   # Display the progress bar!
-
+  
   tmp <- Summarize(get(g) ~ sam.lab, data = input, digits = 3)
   
-  # print(tmp)
-  # boxplot(get(g) ~ sam.lab, data = input)
+  #print(tmp)
+  #boxplot(get(g) ~ sam.lab, data = input)
   
   deg.per <- try(independence_test(get(g) ~ sam.lab, 
                                    data = input), 
@@ -73,13 +73,38 @@ for (g in all.genes) {
   
   # This variable, deg.count, stores all the differentially expressed genes.
   
-  if (!is.na(deg.p) & deg.p < 0.01) deg.count <- c(deg.count, g) else next
+  if (!is.na(deg.p) & deg.p < pvalue) deg.count <- c(deg.count, g,deg.p) else next
   
 }
 
 close(pb)
 
-deg.per <- deg.count; rm(deg.count)
+
+deg.count1<-matrix(deg.count,ncol=2,byrow = T)
+
+colnames(deg.count1)<-c("name","Pvalue")
+
+deg.count1<-as.data.frame(deg.count1)
+
+
+fdrp=p.adjust(deg.count1$Pvalue, "BH")
+
+
+names(fdrp)<-deg.count1$name
+
+deg.count2<-as.matrix(fdrp)
+
+colnames(deg.count2)<-"Pvalue"
+
+deg.count2<-as.data.frame(deg.count2)
+
+deg.count2$name<-rownames(deg.count2)
+
+deg.count2 <- deg.count2[order(deg.count2$Pvalue),]
+
+deg.per <-deg.count2[deg.count2$Pvalue<pvalue,]
+
+deg.per <- deg.count1$name
 
 deg.per
 
@@ -96,7 +121,3 @@ deg.per
 
 ### End of Step-02.
 ### ------------------------------------------------------------------------ ###
-
-### End of this chunk. 
-### ****************************************************************************
-
