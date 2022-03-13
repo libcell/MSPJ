@@ -1,11 +1,10 @@
-
 ################################################################################
 #    &&&....&&&    % Project: MSPJ approach for identification of DEGs         #
-#  &&&&&&..&&&&&&  % Author: Bo Li, Huachun Yin, Jingxin Tao, Youjin Hao       #
-#  &&&&&&&&&&&&&&  % Date: Jun. 1st, 2020                                      #
+#  &&&&&&..&&&&&&  % Author: Bo Li, Huachun Yin, Jingxin Tao   
+#  &&&&&&&&&&&&&&  % Date: Mar. 1st, 2022                                      #
 #   &&&&&&&&&&&&   %                                                           #
-#     &&&&&&&&     % Environment: R version 3.6.0;                             #
-#       &&&&       % x86_64-w64-mingw32/x64 (64-bit)                           #
+#     &&&&&&&&     % Environment: R version 3.5.3;                             #
+#       &&&&       % Platform: x86_64-pc-linux-gnu (64-bit)                    #
 #        &         %                                                           #
 ################################################################################
 
@@ -21,9 +20,8 @@
 ### Step-01. Define the number of samples and genes, respectively.
 
 num.control <- 15
-
 num.experimental <- 15
-
+tot.samples<-num.control+num.experimental
 num.gene <- 20000
 
 ### End of Step-01.
@@ -52,12 +50,12 @@ sdn <- 0.4 # normal distribution standard deviation for additive noise
 rseed <- 50 # computer random number initialization
 
 mcr.data <- madsim.yhc(mdata = NULL, 
-                   n = num.gene, 
-                   ratio = 0, 
-                   fparams, 
-                   dparams, 
-                   sdn, 
-                   rseed)
+                       n = num.gene, 
+                       ratio = 0, 
+                       fparams, 
+                       dparams, 
+                       sdn, 
+                       rseed)
 
 # DNA microarray dataset simulated in this study.
 
@@ -94,33 +92,49 @@ save(mcr.matrix, file = mcr.file)
 # Warnning: you must run the module chunk01 before this step. 
 # tmpdir <- normalizePath(tempdir(), winslash = "/")
 
-# library(compcodeR)
+library(SPsimSeq)
 
-seqdata.obj <- generateSyntheticData.yhc(dataset = "seq.data", 
-                                         n.vars = num.gene, # the number of genes
-                                         m1 = num.experimental, # number of samples in experimental group
-                                         m2 = num.control, # number of samples in control group
-                                         n.diffexp = 500,
-                                         fraction.upregulated = 0.5,
-                                         output.file = "seqdata.rds")
+data("zhang.data.sub") 
+
+# filter genes with sufficient expression (important step to avoid bugs) 
+zhang.counts <- zhang.data.sub$counts 
+MYCN.status  <- zhang.data.sub$MYCN.status #The grouping variable
+
+
+set.seed(1) #Set seed for reproducibility
+# simulate data
+sim.data.bulk <- SPsimSeq(n.sim = 1,
+                          s.data = zhang.counts,
+                          group = MYCN.status,
+                          n.genes = num.gene,
+                          batch.config = 1,
+                          group.config = c(0.5, 0.5),
+                          tot.samples = tot.samples, 
+                          pDE = 0.1,
+                          lfc.thrld = 0.5,
+                          result.format = "list",
+                          return.details = FALSE)
 
 # Extracting the gene expression matrix. 
 
-seq.matrix <- seqdata.obj@count.matrix
+seq.list <- sim.data.bulk[[1]]
 
-seq.varanno <- seqdata.obj@variable.annotations
+seq.matrix <- seq.list$counts
 
-seq.samanno <- seqdata.obj@sample.annotations
+seq.samanno <- seq.list$colData
 
-seq.upvar <- table(seq.varanno$upregulation)
+seq.samanno$Group[seq.samanno$Group==1]<-"Experimental"
 
-up.gene <- rownames(seq.matrix)[seq.varanno$upregulation == 1]
+seq.samanno$Group[seq.samanno$Group==0]<-"Control"
 
-seq.downvar <- table(seq.varanno$downregulation)
+colnames(seq.matrix)<-seq.samanno$Group
 
-down.gene <- rownames(seq.matrix)[seq.varanno$downregulation == 1]
+seq.rowanno <- seq.list$rowData
 
-dim(seq.matrix)
+seq.DEG<-seq.rowanno[seq.rowanno$DE.ind==TRUE,]
+
+seq.DEG<-rownames(seq.DEG)
+
 
 seq.file <- paste0("seq", 
                    "-", 
@@ -136,6 +150,3 @@ save(seq.matrix, file = seq.file)
 
 ### End of Step-03. 
 ### ------------------------------------------------------------------------ ###
-
-### End of this chunk. 
-### ****************************************************************************
