@@ -1,11 +1,10 @@
-
 ################################################################################
 #    &&&....&&&    % Project: MSPJ approach for identification of DEGs         #
-#  &&&&&&..&&&&&&  % Author: Bo Li, Huachun Yin, Jingxin Tao, Youjin Hao       #
-#  &&&&&&&&&&&&&&  % Date: Jun. 1st, 2020                                      #
+#  &&&&&&..&&&&&&  % Author: Bo Li, Huachun Yin, Jingxin Tao   
+#  &&&&&&&&&&&&&&  % Date: Mar. 1st, 2022                                      #
 #   &&&&&&&&&&&&   %                                                           #
-#     &&&&&&&&     % Environment: R version 3.6.0;                             #
-#       &&&&       % x86_64-w64-mingw32/x64 (64-bit)                           #
+#     &&&&&&&&     % Environment: R version 3.5.3;                             #
+#       &&&&       % Platform: x86_64-pc-linux-gnu (64-bit)                    #
 #        &         %                                                           #
 ################################################################################
 
@@ -67,18 +66,16 @@ forest(res,
 
 # 4) Draw the funnel plot for a given gene. 
 
-col.seq <- rep(NA, ncol(eset))
-
-col.seq[grep("Experimental", colnames(eset))] <- mypal2[1]
-col.seq[grep("Control", colnames(eset))] <- mypal2[2]
-
-funnel(res, 
-       pch = 20, 
-       col = col.seq, 
-       bg = 1:50)
-
-### End of Step-01.
-### ------------------------------------------------------------------------ ###
-
-### End of this chunk. 
-### ****************************************************************************
+# col.seq <- rep(NA, ncol(eset))
+#
+# col.seq[grep("Experimental", colnames(eset))] <- mypal2[1]
+# col.seq[grep("Control", colnames(eset))] <- mypal2[2]
+#
+# funnel(res, 
+#        pch = 20, 
+#        col = col.seq, 
+#        bg = 1:50)
+#
+#### End of Step-01.
+#### ------------------------------------------------------------------------ ###
+#
