@@ -5,5 +5,4 @@
 
 <img src = "image/MSPJ-logo.png" width = "800" align = "middle">
 
-PS: The big datasets used in this study will be available on my google drive, and detailed informations are as follows. Please click the link 
-<https://drive.google.com/drive/folders/1zesh6xKr_Hobc6pseqUjC42JtpeGGERq?usp=sharing> to check them. 
+PS: All artificial datasets used to evaluate the performance of gene selection methods were deposited in the Zenodo repository <https://doi.org/10.5281/zenodo.6320499>. The real datasets were collected from GEO and pre-processed according to the pipeline described in this manuscript.
