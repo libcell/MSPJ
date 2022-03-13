@@ -9,7 +9,7 @@
 ################################################################################
 
 ### ****************************************************************************
-### code chunk number 01: Improved R script for RNA-seq data simulation.
+### code chunk number 01: Improved R script for gene expression data simulation.
 ### ****************************************************************************
 
 # Setting the work directory, under the Windows Operation System. 
