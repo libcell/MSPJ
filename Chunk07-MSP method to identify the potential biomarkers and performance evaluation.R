@@ -1,11 +1,11 @@
 
 ################################################################################
 #    &&&....&&&    % Project: MSPJ approach for identification of DEGs         #
-#  &&&&&&..&&&&&&  % Author: Bo Li, Huachun Yin, Jingxin Tao, Youjin Hao       #
-#  &&&&&&&&&&&&&&  % Date: Jun. 1st, 2020                                      #
+#  &&&&&&..&&&&&&  % Author: Bo Li, Huachun Yin, Jingxin Tao   
+#  &&&&&&&&&&&&&&  % Date: Mar. 1st, 2022                                      #
 #   &&&&&&&&&&&&   %                                                           #
-#     &&&&&&&&     % Environment: R version 3.6.0;                             #
-#       &&&&       % x86_64-w64-mingw32/x64 (64-bit)                           #
+#     &&&&&&&&     % Environment: R version 3.5.3;                             #
+#       &&&&       % Platform: x86_64-pc-linux-gnu (64-bit)                    #
 #        &         %                                                           #
 ################################################################################
 
@@ -18,9 +18,7 @@
 #. deg.svm <- setlist$SVM.RFE
 #. deg.per <- setlist$Permutation
 
-deg.int <- intersect(intersect(deg.meta, 
-                               deg.svm), 
-                     deg.per)
+deg.int <- intersect(deg.svm,intersect(deg.meta, deg.per))
 
 #. table(as.numeric(gsub("g", "", deg.meta)) > 500)
 #. table(as.numeric(gsub("g", "", deg.svm)) > 500)
@@ -74,10 +72,13 @@ venn(setlist,
 
 ### ------------------------------------------------------------------------ ###
 ### Step-03. Constructing the SVM models and validation with nested k-fold CV. 
-
+deg.int <- intersect(intersect(deg.meta, 
+                               deg.svm), 
+                     deg.per)
+set.seed(5)
 library(pROC)
 
-sam.iris <- input[, c("sam.lab", deg.int)]
+sam.iris <- input[, c("sam.lab", deg.int[1:10])]
 
 X <- sam.iris[, names(sam.iris) != "sam.lab"]
 
@@ -147,21 +148,18 @@ plot.roc(res.roc,
          auc.polygon.col = "#377EB822", 
          add = TRUE) 
 
-legend("bottomright", 
-       legend = c("SVM-RFE", "LIMMA", "edgeR", "DESeq2"), 
-       col = mypal2[1:4], 
-       lwd = 4)
-
+#legend("bottomright", 
+#       legend = c("SVM-RFE", "LIMMA", "edgeR", "DESeq2"), 
+#       col = mypal2[1:4], 
+#       lwd = 4)
+#
 par(pty = "m")
 
 # lines(perf, col = "green")
 
-auc.value <- auc(res.roc)
+auc.value.int <- auc(res.roc)
 
 auc.value
 
 ### End of Step-03.
 ### ------------------------------------------------------------------------ ###
-
-### End of this chunk. 
-### ****************************************************************************
