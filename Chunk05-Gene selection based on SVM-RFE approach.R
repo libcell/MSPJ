@@ -1,11 +1,11 @@
 
 ################################################################################
 #    &&&....&&&    % Project: MSPJ approach for identification of DEGs         #
-#  &&&&&&..&&&&&&  % Author: Bo Li, Huachun Yin, Jingxin Tao, Youjin Hao       #
-#  &&&&&&&&&&&&&&  % Date: Jun. 1st, 2020                                      #
+#  &&&&&&..&&&&&&  % Author: Bo Li, Huachun Yin, Jingxin Tao   
+#  &&&&&&&&&&&&&&  % Date: Mar. 1st, 2022                                      #
 #   &&&&&&&&&&&&   %                                                           #
-#     &&&&&&&&     % Environment: R version 3.6.0;                             #
-#       &&&&       % x86_64-w64-mingw32/x64 (64-bit)                           #
+#     &&&&&&&&     % Environment: R version 3.5.3;                             #
+#       &&&&       % Platform: x86_64-pc-linux-gnu (64-bit)                    #
 #        &         %                                                           #
 ################################################################################
 
@@ -56,15 +56,18 @@ sam.lab <- sapply(colnames(eset), function(x) strsplit(x, "-")[[1]][1])
 
 names(sam.lab) <- NULL
 
+sam.lab<-as.factor(sam.lab)
+
 eset.mat <- as.data.frame(t(eset))
 
 input <- cbind(sam.lab, eset.mat)
 
 input <- as.data.frame(input)
 
+dim(input)
 print(input[1:10, 1:10])
 
-save(input, file = "input.RData")
+#save(input, file = "input.RData")
 
 ### End of Step-02.
 ### ------------------------------------------------------------------------ ###
@@ -72,12 +75,11 @@ save(input, file = "input.RData")
 ### ------------------------------------------------------------------------ ###
 ### Step-03. Gene selection using simple SVM-RFE algorithm.
 
-set.seed(1)
 
 # Basic usage: when k = 1, it was standard SVM-RFE; or, multiple SVM-RFE. 
 # halve.above - allowing you cut the features in half each round. 
 
-ranked.feat <- svmRFE(input, k = 5, halve.above = 100)
+#ranked.feat <- svmRFE(input, k = 5, halve.above = 1000)
 
 ### End of Step-03.
 ### ------------------------------------------------------------------------ ###
@@ -87,31 +89,48 @@ ranked.feat <- svmRFE(input, k = 5, halve.above = 100)
 
 # 1) Generating multiple sub-groups based resampling, and setting up cross validation.
 
-nfold <- 10
+nfold <- 5
+
 nrows <- nrow(input)
+
+set.seed(1)
+
 folds <- rep(1:nfold, len=nrows)[sample(nrows)]
-folds
+
 folds <- lapply(1:nfold, function(x) which(folds == x))
-folds
 
 # 2) Perform feature ranking on all training sets
 
-results <- lapply(folds, svmRFE.wrap, input, k = 5, halve.above = 100)
+feedback<-try(results <-lapply(folds, svmRFE.wrap, input, k = 5, 
+                               halve.above = 1000), silent = TRUE)
+
+if("empty"%in%feedback){
+  set.seed(2)
+  
+  folds <- rep(1:nfold, len=nrows)[sample(nrows)]
+  
+  folds <- lapply(1:nfold, function(x) which(folds == x))
+  
+  # 2) Perform feature ranking on all training sets
+  
+  results <-lapply(folds, svmRFE.wrap, input, k = 5, halve.above = 1000)
+  
+}
+
 length(results)
 results
 
 # 3) Obtain top features across ALL folds
 
 top.features <- WriteFeatures(results, input, save = FALSE)
+
 head(top.features)
 
 # 4) Selecting the top n genes as the DEGs identified by SVM-RFE method, eg. 500. 
 
-deg.svm <- top.features$FeatureName[1:500]
-
+deg.svm <- top.features$FeatureName
 deg.svm <- as.character(deg.svm)
 
-deg.svm
 
 # Estimate generalization error using a varying number of top features
 #. featsweep <- lapply(1:12, FeatSweep.wrap, results, input)
@@ -126,5 +145,3 @@ deg.svm
 ### End of Step-04.
 ### ------------------------------------------------------------------------ ###
 
-### End of this chunk. 
-### ****************************************************************************
