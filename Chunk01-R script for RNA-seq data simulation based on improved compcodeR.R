@@ -1,11 +1,10 @@
-
 ################################################################################
 #    &&&....&&&    % Project: MSPJ approach for identification of DEGs         #
-#  &&&&&&..&&&&&&  % Author: Bo Li, Huachun Yin, Jingxin Tao, Youjin Hao       #
-#  &&&&&&&&&&&&&&  % Date: Jun. 1st, 2020                                      #
+#  &&&&&&..&&&&&&  % Author: Bo Li, Huachun Yin, Jingxin Tao   
+#  &&&&&&&&&&&&&&  % Date: Mar. 1st, 2022                                      #
 #   &&&&&&&&&&&&   %                                                           #
-#     &&&&&&&&     % Environment: R version 3.6.0;                             #
-#       &&&&       % x86_64-w64-mingw32/x64 (64-bit)                           #
+#     &&&&&&&&     % Environment: R version 3.5.3;                             #
+#       &&&&       % Platform: x86_64-pc-linux-gnu (64-bit)                    #
 #        &         %                                                           #
 ################################################################################
 
@@ -14,7 +13,7 @@
 ### ****************************************************************************
 
 # Setting the work directory, under the Windows Operation System. 
-setwd("E:/R-work-dir")
+# setwd("F:/")
 
 ### ------------------------------------------------------------------------ ###
 ### Step-01. Install all R packages required in this step. 
@@ -23,13 +22,15 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 
 if (!require("edgeR")) BiocManager::install("edgeR")
-if (!require("compcodeR")) BiocManager::install("compcodeR")
 if (!require("preprocessCore")) BiocManager::install("preprocessCore")
 if (!require("meta")) install.packages("meta")
 if (!require("e1071")) install.packages("e1071")
 if (!require("coin")) install.packages("coin")
 if (!require("ggsci")) install.packages("ggsci")
+if (!require("SPsimSeq")) remotes::install_github("CenterForStatistics-UGent/SPsimSeq")
 
+
+library(SPsimSeq)
 library(preprocessCore)
 library(madsim)
 library(edgeR)
@@ -39,6 +40,29 @@ library(e1071)
 library(coin)
 library(venn)
 library(ggsci)
+library(KEGGdzPathwaysGEO)
+library(GEOquery)
+library(affy)
+library(limma)
+library(pROC)
+library(multtest)
+library(preprocessCore)
+library(FSA)
+library(pROC)
+library(limma)
+library(samr)
+library(simpleaffy)
+library(RankProd)
+library(bspec)
+library(netClass)
+library(randomForest)
+library(FSinR)
+library(multtest)
+library(DT)
+library(org.Hs.eg.db)
+library(clusterProfiler)
+library(ggplot2)
+library(Rmisc)
 
 ### End of Step-01. 
 ### ------------------------------------------------------------------------ ###
@@ -100,12 +124,14 @@ madsim.yhc <- function (mdata = NULL,
       xi1 <- xi_val[1:(m1 + 1)]
       mude <- dparams$muminde + rexp(1, dparams$lambda2)
       if (sample(1:1000, 1) > (1000 * fparams$sym)) {
-        xi2 <- xi_val[(m1 + 2):m] + rnorm(m2, mean = mude, 
+        xi2 <- xi_val[(m1 + 2):m] + rnorm(m2, 
+                                          mean = mude, 
                                           sd = dparams$sdde)
         xid[i] <- 1
       }
       else {
-        xi2 <- xi_val[(m1 + 2):m] - rnorm(m2, mean = mude, 
+        xi2 <- xi_val[(m1 + 2):m] - rnorm(m2, 
+                                          mean = mude, 
                                           sd = dparams$sdde)
         xid[i] <- -1
       }
@@ -117,376 +143,63 @@ madsim.yhc <- function (mdata = NULL,
   colnames(xdat) <- c("V1", cont, test)
   xsd <- sd(xdat[, 1])
   if (sdn > 0) {
-    ndat <- matrix(c(rnorm(n * m, mean = 0, sd = sdn)), ncol = m)
+    ndat <- matrix(c(rnorm(n * m, mean = 0, sd = sdn)), 
+                   ncol = m)
     xdat <- xdat + ndat
   }
-  xdata <- matrix(c(rep(0, n * (m - 1))), ncol = (m - 1))
+  xdata <- matrix(c(rep(0, n * (m - 1))), 
+                  ncol = (m - 1))
   if (ratio) {
     xdata <- xdat[, 2:m] - xdat[, 1]
   }
   else {
     xdata <- xdat[, 2:m]
   }
-  list(xdata = xdata, xid = xid, xsd = xsd)
+  list(xdata = xdata, 
+       xid = xid, 
+       xsd = xsd)
 }
 
 ### End of Function-01. 
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Function-02. Defined the function generateSyntheticData.yhc (for RNA-seq data simulation)
-
-library(edgeR)
-library(compcodeR)
-
-generateSyntheticData.yhc <- function(dataset, 
-                                      n.vars, 
-                                      m1, 
-                                      m2, 
-                                      n.diffexp, 
-                                      repl.id = 1, 
-                                      seqdepth = 1e+07, 
-                                      minfact = 0.7, 
-                                      maxfact = 1.4, 
-                                      relmeans = "auto", 
-                                      dispersions = "auto", 
-                                      fraction.upregulated = 1, 
-                                      between.group.diffdisp = FALSE, 
-                                      filter.threshold.total = 0, 
-                                      filter.threshold.mediancpm = 0, 
-                                      fraction.non.overdispersed = 0, 
-                                      random.outlier.high.prob = 0, 
-                                      random.outlier.low.prob = 0, 
-                                      single.outlier.high.prob = 0, 
-                                      single.outlier.low.prob = 0, 
-                                      effect.size = 1.5, 
-                                      output.file = NULL) {
-  
-  
-  if (!is.null(output.file)) {
-    if (!(substr(output.file, nchar(output.file) - 3, nchar(output.file)) == 
-          ".rds")) {
-      stop("output.file must be an .rds file.")
-    }
-  }
-  uID <- paste(sample(c(0:9, letters, LETTERS), 10, replace = TRUE), 
-               collapse = "")
-  condition <- rep(c(1, 2), times = c(m1, m2))
-  S1 <- which(condition == 1)
-  S2 <- which(condition == 2)
-  if (length(effect.size) == 1) {
-    n.upregulated <- floor(fraction.upregulated * n.diffexp)
-    if (fraction.upregulated != 0 & n.diffexp != 0) {
-      genes.upreg <- 1:n.upregulated
-    }
-    else {
-      genes.upreg <- NULL
-    }
-    if (fraction.upregulated != 1 & n.diffexp != 0) {
-      genes.downreg <- (n.upregulated + 1):n.diffexp
-    }
-    else {
-      genes.downreg <- NULL
-    }
-    genes.nonreg <- setdiff(1:n.vars, union(genes.upreg, 
-                                            genes.downreg))
-  }
-  else {
-    if (length(effect.size) != n.vars) {
-      stop("The length of the effect.size vector must be the same as the number of simulated genes.")
-    }
-    else {
-      genes.upreg <- which(effect.size > 1)
-      genes.downreg <- which(effect.size < 1)
-      genes.nonreg <- which(effect.size == 1)
-      n.upregulated <- length(genes.upreg)
-      n.diffexp <- length(genes.upreg) + length(genes.downreg)
-      fraction.upregulated <- n.upregulated/n.diffexp
-    }
-  }
-  differential.expression <- rep(0, n.vars)
-  differential.expression[genes.upreg] <- 1
-  differential.expression[genes.downreg] <- 1
-  upregulation <- rep(0, n.vars)
-  upregulation[genes.upreg] <- 1
-  downregulation <- rep(0, n.vars)
-  downregulation[genes.downreg] <- 1
-  if (is.character(relmeans) | is.character(dispersions)) {
-    mu.phi.estimates <- system.file("extdata", "Pickrell.Cheung.Mu.Phi.Estimates.rds", 
-                                    package = "compcodeR")
-    mu.phi.estimates <- readRDS(mu.phi.estimates)
-    mu.estimates <- mu.phi.estimates$pickrell.cheung.mu
-    phi.estimates <- mu.phi.estimates$pickrell.cheung.phi
-    to.include <- sample(1:length(mu.estimates), n.vars, 
-                         replace = ifelse(n.vars > length(mu.estimates), TRUE, 
-                                          FALSE))
-    truedispersions.S1 <- phi.estimates[to.include]
-    truemeans.S1 <- mu.estimates[to.include]
-  }
-  if (!is.character(relmeans)) {
-    if (length(relmeans) != n.vars) 
-      stop("The length of the relmeans vector must be the same as the number of simulated genes.")
-    truemeans.S1 <- c(relmeans)
-  }
-  if (!is.character(dispersions)) {
-    if (nrow(cbind(dispersions)) != n.vars) 
-      stop("The number of provided dispersions must be the same as the number of simulated genes.")
-    truedispersions.S1 <- cbind(dispersions)[, 1]
-    if (ncol(cbind(dispersions)) > 1) {
-      truedispersions.S2 <- cbind(dispersions)[, 2]
-    }
-    else {
-      truedispersions.S2 <- truedispersions.S1
-    }
-  }
-  nfacts <- runif(m1+m2, min = minfact, max = maxfact)
-  seq.depths <- nfacts * seqdepth
-  overdispersed <- rep(1, n.vars)
-  if (fraction.non.overdispersed > 0) {
-    overdispersed[genes.upreg[1:round(fraction.non.overdispersed * 
-                                        length(genes.upreg))]] <- 0
-    overdispersed[genes.downreg[1:round(fraction.non.overdispersed * 
-                                          length(genes.downreg))]] <- 0
-    overdispersed[genes.nonreg[1:round(fraction.non.overdispersed * 
-                                         length(genes.nonreg))]] <- 0
-  }
-  prob.S1 <- truemeans.S1
-  prob.S2 <- rep(0, length(prob.S1))
-  if (length(effect.size) == 1) {
-    for (i in 1:n.vars) {
-      if (i %in% genes.upreg) {
-        prob.S2[i] <- (effect.size + rexp(1, rate = 1)) * 
-          prob.S1[i]
-      }
-      else {
-        if (i %in% genes.downreg) {
-          prob.S2[i] <- 1/(effect.size + rexp(1, rate = 1)) * 
-            prob.S1[i]
-        }
-        else {
-          prob.S2[i] <- prob.S1[i]
-        }
-      }
-    }
-  }
-  else {
-    prob.S2 <- c(effect.size) * prob.S1
-  }
-  true.log2foldchange <- log2(prob.S2/prob.S1)
-  sum.S1 <- sum(prob.S1)
-  sum.S2 <- sum(prob.S2)
-  if (is.character(dispersions)) {
-    truedispersions.S2 <- truedispersions.S1
-    if (between.group.diffdisp == TRUE) {
-      for (i in 1:length(truedispersions.S2)) {
-        sample.base <- phi.estimates[abs(log10(mu.estimates) - 
-                                           log10(prob.S2[i])) < 0.05]
-        if (length(sample.base) < 50) {
-          sample.base <- phi.estimates[order(abs(log10(mu.estimates) - 
-                                                   log10(prob.S2[i])))][1:500]
-        }
-        truedispersions.S2[i] <- sample(sample.base, 
-                                        1)
-      }
-    }
-  }
-  truedispersions.S1 <- truedispersions.S1 * overdispersed
-  truedispersions.S2 <- truedispersions.S2 * overdispersed
-  Z <- matrix(0, n.vars, length(S1) + length(S2))
-  for (i in 1:n.vars) {
-    for (j in 1:ncol(Z)) {
-      if (j %in% S1) {
-        if (overdispersed[i] == 1) {
-          Z[i, j] <- rnbinom(n = 1, mu = prob.S1[i]/sum.S1 * 
-                               seq.depths[j], size = 1/truedispersions.S1[i])
-        }
-        else {
-          Z[i, j] <- rpois(n = 1, lambda = prob.S1[i]/sum.S1 * 
-                             seq.depths[j])
-        }
-      }
-      else {
-        if (overdispersed[i] == 1) {
-          Z[i, j] <- rnbinom(n = 1, mu = prob.S2[i]/sum.S2 * 
-                               seq.depths[j], size = 1/truedispersions.S2[i])
-        }
-        else {
-          Z[i, j] <- rpois(n = 1, lambda = prob.S2[i]/sum.S2 * 
-                             seq.depths[j])
-        }
-      }
-    }
-  }
-  random.outliers <- matrix(0, nrow(Z), ncol(Z))
-  random.outliers.factor <- matrix(1, nrow(Z), ncol(Z))
-  if (random.outlier.high.prob != 0 | random.outlier.low.prob != 
-      0) {
-    for (i in 1:nrow(Z)) {
-      for (j in 1:ncol(Z)) {
-        tmp <- runif(1)
-        if (tmp < random.outlier.high.prob) {
-          random.outliers[i, j] <- 1
-          random.outliers.factor[i, j] <- runif(1, min = 5, 
-                                                max = 10)
-        }
-        else if (tmp < random.outlier.low.prob + random.outlier.high.prob) {
-          random.outliers[i, j] <- (-1)
-          random.outliers.factor[i, j] <- 1/runif(1, 
-                                                  min = 5, max = 10)
-        }
-      }
-    }
-    Z <- round(random.outliers.factor * Z)
-  }
-  has.single.outlier <- rep(0, n.vars)
-  single.outliers <- matrix(0, nrow(Z), ncol(Z))
-  single.outliers.factor <- matrix(1, nrow(Z), ncol(Z))
-  if (single.outlier.high.prob != 0 | single.outlier.low.prob != 
-      0) {
-    has.single.outlier[genes.upreg[1:floor((single.outlier.high.prob + 
-                                              single.outlier.low.prob) * length(genes.upreg))]] <- 1
-    has.single.outlier[genes.downreg[1:floor((single.outlier.high.prob + 
-                                                single.outlier.low.prob) * length(genes.downreg))]] <- 1
-    has.single.outlier[genes.nonreg[1:floor((single.outlier.high.prob + 
-                                               single.outlier.low.prob) * length(genes.nonreg))]] <- 1
-    for (i in 1:nrow(Z)) {
-      if (has.single.outlier[i] == 1) {
-        the.sample <- sample(1:(ncol(Z)), 1)
-        if (runif(1) < (single.outlier.high.prob/(single.outlier.high.prob + 
-                                                  single.outlier.low.prob))) {
-          single.outliers[i, the.sample] <- 1
-          single.outliers.factor[i, the.sample] <- runif(1, 
-                                                         min = 5, max = 10)
-        }
-        else {
-          single.outliers[i, the.sample] <- (-1)
-          single.outliers.factor[i, the.sample] <- 1/runif(1, 
-                                                           min = 5, max = 10)
-        }
-      }
-    }
-    Z <- round(single.outliers.factor * Z)
-  }
-  rownames(Z) <- 1:n.vars
-  n.random.outliers.up.S1 <- apply(random.outliers[, S1] > 0, 1, sum)
-  n.random.outliers.up.S2 <- apply(random.outliers[, S2] > 0, 1, sum)
-  n.random.outliers.down.S1 <- apply(random.outliers[, S1] < 0, 1, sum)
-  n.random.outliers.down.S2 <- apply(random.outliers[, S2] < 0, 1, sum)
-  n.single.outliers.up.S1 <- apply(single.outliers[, S1] > 0, 1, sum)
-  n.single.outliers.up.S2 <- apply(single.outliers[, S2] > 0, 1, sum)
-  n.single.outliers.down.S1 <- apply(single.outliers[, S1] < 0, 1, sum)
-  n.single.outliers.down.S2 <- apply(single.outliers[, S2] < 0, 1, sum)
-  nf <- calcNormFactors(Z)
-  norm.factors <- nf * colSums(Z)
-  common.libsize <- exp(mean(log(colSums(Z))))
-  pseudocounts <- sweep(Z + 0.5, 2, norm.factors, "/") * common.libsize
-  log2.pseudocounts <- log2(pseudocounts)
-  M.value <- apply(log2.pseudocounts[, S2], 1, mean) - apply(log2.pseudocounts[, S1], 1, mean)
-  A.value <- 0.5 * (apply(log2.pseudocounts[, S2], 1, mean) + 
-                      apply(log2.pseudocounts[, S1], 1, mean))
-  variable.annotations <- data.frame(truedispersions.S1 = truedispersions.S1, 
-                                     truedispersions.S2 = truedispersions.S2, truemeans.S1 = prob.S1, 
-                                     truemeans.S2 = prob.S2, n.random.outliers.up.S1 = n.random.outliers.up.S1, 
-                                     n.random.outliers.up.S2 = n.random.outliers.up.S2, n.random.outliers.down.S1 = n.random.outliers.down.S1, 
-                                     n.random.outliers.down.S2 = n.random.outliers.down.S2, 
-                                     n.single.outliers.up.S1 = n.single.outliers.up.S1, n.single.outliers.up.S2 = n.single.outliers.up.S2, 
-                                     n.single.outliers.down.S1 = n.single.outliers.down.S1, 
-                                     n.single.outliers.down.S2 = n.single.outliers.down.S2, 
-                                     M.value = M.value, A.value = A.value, truelog2foldchanges = true.log2foldchange, 
-                                     upregulation = upregulation, downregulation = downregulation, 
-                                     differential.expression = differential.expression)
-  rownames(variable.annotations) <- rownames(Z)
-  sample.annotations <- data.frame(condition = condition, depth.factor = nfacts)
-  info.parameters <- list(n.diffexp = n.diffexp, fraction.upregulated = fraction.upregulated, 
-                          between.group.diffdisp = between.group.diffdisp, filter.threshold.total = filter.threshold.total, 
-                          filter.threshold.mediancpm = filter.threshold.mediancpm, 
-                          fraction.non.overdispersed = fraction.non.overdispersed, 
-                          random.outlier.high.prob = random.outlier.high.prob, 
-                          random.outlier.low.prob = random.outlier.low.prob, single.outlier.high.prob = single.outlier.high.prob, 
-                          single.outlier.low.prob = single.outlier.low.prob, effect.size = effect.size, 
-                          m1=m1, m2=m2, repl.id = repl.id, 
-                          dataset = dataset, uID = uID, seqdepth = seqdepth, minfact = minfact, 
-                          maxfact = maxfact)
-  s <- apply(Z, 1, sum)
-  keep.T <- which(s >= filter.threshold.total)
-  Z.T <- Z[keep.T, ]
-  variable.annotations.T <- variable.annotations[keep.T, ]
-  filtering <- paste("total count >=", filter.threshold.total)
-  cpm <- sweep(Z.T, 2, apply(Z.T, 2, sum), "/") * 1e+06
-  m <- apply(cpm, 1, median)
-  keep.C <- which(m >= filter.threshold.mediancpm)
-  Z.TC <- Z.T[keep.C, ]
-  variable.annotations.TC <- variable.annotations.T[keep.C, 
-                                                    ]
-  filtering <- paste(filtering, "; ", paste("median cpm >=", 
-                                            filter.threshold.mediancpm))
-  rownames(Z.TC) <- paste("g", 1:nrow(Z.TC), sep = "")
-  cont <- paste("Experimental", 1:m1, sep = "-") # naming the experimental samples
-  test <- paste("Control", 1:m2, sep = "-") # naming the control samples
-  colnames(Z.TC) <- c(cont, test)
-  rownames(sample.annotations) <- colnames(Z.TC)
-  rownames(variable.annotations.TC) <- rownames(Z.TC)
-  data.object <- compData(count.matrix = Z.TC, variable.annotations = variable.annotations.TC, 
-                          sample.annotations = sample.annotations, filtering = filtering, 
-                          info.parameters = info.parameters)
-  if (!is.null(output.file)) {
-    saveRDS(data.object, file = output.file)
-  }
-  return(invisible(data.object))
-  
-}
-
-### End of Function-02. 
-### ------------------------------------------------------------------------ ###
-
-### ------------------------------------------------------------------------ ###
-### Function-03. Define the function to generate multiple sub-groups from primary study. 
+### Function-02. Define the function to generate multiple sub-groups from primary study. 
 
 generateSubGroup <- function(dataset = eset, 
                              set.n = 40, 
                              size.min = 10, 
                              size.max = 20) {
-  
   if (!is.matrix(dataset)) {
-    
     stop("Please input the propriate dataset!")
-    
   }
-  
   sample.sets <- list()
-  
   for (i in 1:set.n) {
-    
     sam.index <- sample(1:ncol(eset), 
-                        sample(size.min:size.max, 1, replace = FALSE), 
+                        sample(size.min:size.max, 
+                               1, 
+                               replace = FALSE), 
                         replace = FALSE)
-    
     if (length(grep("Experimental", colnames(eset[, sam.index]))) >= 3 & length(grep("Control", colnames(eset[, sam.index]))) >= 3) 
       sample.sets[[i]] <- eset[, sam.index] else {
-        
         sample.sets[[i]] <- NA
-        
         next
-        
       }  
     
   }
-  
   real.sample.sets <- sample.sets[!is.na(sample.sets)]
-  
-  names(real.sample.sets) <- paste("sampling_set", 1:length(real.sample.sets), sep = "-")
-  
+  names(real.sample.sets) <- paste("sampling_set", 
+                                   1:length(real.sample.sets), 
+                                   sep = "-")
   return(real.sample.sets)
-  
 }
-
 # dim(subgroups[[5]])
 
-### End of Function-03. 
+### End of Function-02. 
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Function-04. Define the function to identify the DEGs based on meta-analysis.  
+### Function-03. Define the function to identify the DEGs based on meta-analysis.  
 
 batchMeta <- function(data.list, cutoff = 0.5, g.start = 1, g.end = 100) {
   
@@ -497,39 +210,29 @@ batchMeta <- function(data.list, cutoff = 0.5, g.start = 1, g.end = 100) {
   down.index <- NULL
   
   i <- 0
-  
   # Display the progress bar!
   pb <- txtProgressBar(min = 0, max = g.end - g.start + 1, style = 3, char = "+")
-  
   for (ord.gene in g.start:g.end) {
-    
     # Sys.sleep(0.1)
-    
     i <- i + 1
     ### ord.gene <- 10
-    
     stat.mat <- data.frame(matrix(NA, set.n, 8))
-    
     names(stat.mat) <- c("study", "year", 
                          "n.e", "mean.e", "sd.e", 
                          "n.c", "mean.c", "sd.c")
-    
-    stat.mat$study <- paste("sampling_set", 1:set.n, sep = "-")
-    
-    stat.mat$year <- sample(2000:2020, set.n, replace = TRUE)
+    stat.mat$study <- paste("sampling_set", 
+                            1:set.n, 
+                            sep = "-")
+    stat.mat$year <- sample(2000:2020, 
+                            set.n, 
+                            replace = TRUE)
     
     # x <- sample.sets[[1]]
-    
     f.ne <- function(x) length(grep("Experimental", colnames(x)))
-    
     f.meane <- function(x) mean(x[ord.gene, grep("Experimental", colnames(x))])
-    
     f.sde <- function(x) sd(x[ord.gene, grep("Experimental", colnames(x))])
-    
     f.nc <- function(x) length(grep("Control", colnames(x)))
-    
     f.meanc <- function(x) mean(x[ord.gene, grep("Control", colnames(x))])
-    
     f.sdc <- function(x) sd(x[ord.gene, grep("Control", colnames(x))])
     
     stat.mat$n.e <- unlist(lapply(data.list, f.ne))
@@ -540,7 +243,6 @@ batchMeta <- function(data.list, cutoff = 0.5, g.start = 1, g.end = 100) {
     
     stat.mat$sd.e <- unlist(lapply(data.list, f.sde))
     stat.mat$sd.c <- unlist(lapply(data.list, f.sdc))
-    
     # DT::datatable(stat.mat)
     
     ### ------------------------------------------------------------------------ ###
@@ -583,56 +285,36 @@ batchMeta <- function(data.list, cutoff = 0.5, g.start = 1, g.end = 100) {
     # Finally, DEGs were identified by above indexes. 
     
     if (!is.na(lTE.r) & !is.na(lTE.f) & !is.na(uTE.r) & !is.na(uTE.f)) {
-      
       if (lTE.r > cutoff & lTE.f > cutoff) {
-        
         up.index <- c(up.index, ord.gene)
-        
         # up.inf <- paste("The gene", ord.gene, "was up-regulated!", sep = " ")
-        
         # print(up.inf)
-        
       } else 
-        
         if (uTE.r < -cutoff & uTE.f < -cutoff) {
-          
           down.index <- c(down.index, ord.gene)
-          
           # down.inf <- paste("The gene", ord.gene, "was down-regulated!", sep = " ")
-          
           # print(down.inf)
-          
         } else {
-          
           # non.inf <- paste("The gene", ord.gene, "was not changed at the significant level with 0.05!", sep = " ")
-          
           # print(non.inf)
-          
         }
-      
     } else {
-      
       na.index <- c(na.index, ord.gene) ############
-      
       next
-      
     }
-    
     flush.console()
   }
-  
-  MetaResult <- list(UpGene = up.index, DownGene = down.index)
-  
+  MetaResult <- list(UpGene = up.index, 
+                     DownGene = down.index)
   close(pb)
-  
   return(MetaResult)
 }
 
-### End of Function-04. 
+### End of Function-03. 
 ### ------------------------------------------------------------------------ ###
 
 ### ------------------------------------------------------------------------ ###
-### Function-05. Define the function to generate the meta object.  
+### Function-04. Define the function to generate the meta object.  
 
 singleMeta <- function(data.list, ord.gene = 100) {
   
@@ -682,15 +364,15 @@ singleMeta <- function(data.list, ord.gene = 100) {
   return(res)
 }
 
-### End of Function-05. 
+### End of Function-04. 
 ### ------------------------------------------------------------------------ ###
 
 
 ### ------------------------------------------------------------------------ ###
-### Function-06. A set of SVM-RFE functions for gene selection. 
+### Function-05. A set of SVM-RFE functions for gene selection. 
 ### Note: derived from johncolby/SVM-RFE/msvmRFE.R in Github. 
 
-#++ Function-6.1 svmRFE.wrap
+#++ Function-5.1 svmRFE.wrap
 
 svmRFE.wrap <- function(test.fold, X, ...) {
   # Wrapper to run svmRFE function while omitting a given test fold
@@ -703,7 +385,7 @@ svmRFE.wrap <- function(test.fold, X, ...) {
   return(list(feature.ids=features.ranked, train.data.ids=row.names(train.data), test.data.ids=row.names(test.data)))
 }
 
-#++ Function-6.2 svmRFE
+#++ Function-5.2 svmRFE
 
 svmRFE <- function(X, k = 1, halve.above = 5000) {
   # Feature selection with Multiple SVM Recursive Feature Elimination (RFE) algorithm
@@ -779,72 +461,293 @@ svmRFE <- function(X, k = 1, halve.above = 5000) {
   return (ranked.list)
 }
 
-#++ Function-6.3 getWeights
+#++ Function-5.3 getWeights
 
 getWeights <- function(test.fold, X) {
   # Fit a linear SVM model and obtain feature weights
   train.data = X
   if(!is.null(test.fold)) train.data = X[-test.fold, ]
   
-  svmModel = svm(train.data[, -1], train.data[, 1], cost=10, cachesize=500,
-                 scale=F, type="C-classification", kernel="linear")
+  svmModel <- svm(
+    train.data[,-1],
+    train.data[, 1],
+    cost = 10,
+    cachesize = 500,
+    scale = F,
+    type = "C-classification",
+    kernel = "linear"
+  )
   
   t(svmModel$coefs) %*% svmModel$SV
 }
 
-#++ Function-6.4 WriteFeatures
+#++ Function-5.4 WriteFeatures
 
-WriteFeatures <- function(results, input, save=T, file='features_ranked.txt') {
-  # Compile feature rankings across multiple folds
-  featureID = sort(apply(sapply(results, function(x) sort(x$feature, index.return=T)$ix), 1, mean), index=T)$ix
-  avg.rank  = sort(apply(sapply(results, function(x) sort(x$feature, index.return=T)$ix), 1, mean), index=T)$x
-  feature.name = colnames(input[, -1])[featureID]
-  features.ranked = data.frame(FeatureName=feature.name, FeatureID=featureID, AvgRank=avg.rank)
-  if(save==T) {
-    write.table(features.ranked, file=file, quote=F, row.names=F)
-  } else {
-    features.ranked
+WriteFeatures <-
+  function(results,
+           input,
+           save = T,
+           file = 'features_ranked.txt') {
+    # Compile feature rankings across multiple folds
+    featureID = sort(apply(sapply(results, function(x)
+      sort(x$feature, index.return = T)$ix), 1, mean), index = T)$ix
+    avg.rank  = sort(apply(sapply(results, function(x)
+      sort(x$feature, index.return = T)$ix), 1, mean), index = T)$x
+    feature.name = colnames(input[,-1])[featureID]
+    features.ranked = data.frame(FeatureName = feature.name,
+                                 FeatureID = featureID,
+                                 AvgRank = avg.rank)
+    if (save == T) {
+      write.table(
+        features.ranked,
+        file = file,
+        quote = F,
+        row.names = F
+      )
+    } else {
+      features.ranked
+    }
   }
-}
 
-#++ Function-6.5 FeatSweep.wrap
+#++ Function-5.5 FeatSweep.wrap
 
 FeatSweep.wrap <- function(i, results, input) {
   # Wrapper to estimate generalization error across all hold-out folds, for a given number of top features
-  svm.list = lapply(results, function(x) tune(svm,
-                                              train.x      = input[x$train.data.ids, 1+x$feature.ids[1:i]],
-                                              train.y      = input[x$train.data.ids, 1],
-                                              validation.x = input[x$test.data.ids, 1+x$feature.ids[1:i]],
-                                              validation.y = input[x$test.data.ids, 1],
-                                              # Optimize SVM hyperparamters
-                                              ranges       = tune(svm,
-                                                                  train.x = input[x$train.data.ids, 1+x$feature.ids[1:i]],
-                                                                  train.y = input[x$train.data.ids, 1],
-                                                                  ranges  = list(gamma=2^(-12:0), cost=2^(-6:6)))$best.par,
-                                              tunecontrol  = tune.control(sampling='fix'))$perf)
+  svm.list = lapply(results, function(x)
+    tune(
+      svm,
+      train.x      = input[x$train.data.ids, 1 +
+                             x$feature.ids[1:i]],
+      train.y      = input[x$train.data.ids, 1],
+      validation.x = input[x$test.data.ids, 1 +
+                             x$feature.ids[1:i]],
+      validation.y = input[x$test.data.ids, 1],
+      # Optimize SVM hyperparamters
+      ranges       = tune(
+        svm,
+        train.x = input[x$train.data.ids, 1 +
+                          x$feature.ids[1:i]],
+        train.y = input[x$train.data.ids, 1],
+        ranges  = list(gamma =
+                         2 ^ (-12:0), cost = 2 ^ (-6:6))
+      )$best.par,
+      tunecontrol  = tune.control(sampling =
+                                    'fix')
+    )$perf)
   
-  error = mean(sapply(svm.list, function(x) x$error))
-  return(list(svm.list=svm.list, error=error))
+  error = mean(sapply(svm.list, function(x)
+    x$error))
+  return(list(svm.list = svm.list, error = error))
 }
 
-#++ Function-6.6 PlotErrors
+#++ Function-5.6 PlotErrors
 
-PlotErrors <- function(errors, errors2=NULL, no.info=0.5, ylim=range(c(errors, errors2), na.rm=T), xlab='Number of Features',  ylab='10x CV Error') {
-  # Makes a plot of average generalization error vs. number of top features
-  AddLine <- function(x, col='black') {
-    lines(which(!is.na(errors)), na.omit(x), col=col)
-    points(which.min(x), min(x, na.rm=T), col='red')
-    text(which.min(x), min(x, na.rm=T), paste(which.min(x), '-', format(min(x, na.rm=T), dig=3)), pos=4, col='red', cex=0.75)
+PlotErrors <-
+  function(errors,
+           errors2 = NULL,
+           no.info = 0.5,
+           ylim = range(c(errors, errors2), na.rm = T),
+           xlab = 'Number of Features',
+           ylab = '10x CV Error') {
+    # Makes a plot of average generalization error vs. number of top features
+    AddLine <- function(x, col = 'black') {
+      lines(which(!is.na(errors)), na.omit(x), col = col)
+      points(which.min(x), min(x, na.rm = T), col = 'red')
+      text(
+        which.min(x),
+        min(x, na.rm = T),
+        paste(which.min(x), '-', format(min(x, na.rm = T), dig = 3)),
+        pos = 4,
+        col = 'red',
+        cex = 0.75
+      )
+    }
+    
+    plot(
+      errors,
+      type = 'n',
+      ylim = ylim,
+      xlab = xlab,
+      ylab = ylab
+    )
+    AddLine(errors)
+    if (!is.null(errors2))
+      AddLine(errors2, 'gray30')
+    abline(h = no.info, lty = 3)
   }
-  
-  plot(errors, type='n', ylim=ylim, xlab=xlab, ylab=ylab)
-  AddLine(errors)
-  if(!is.null(errors2)) AddLine(errors2, 'gray30')
-  abline(h=no.info, lty=3)
+
+geneticAlgorithm.yhc <-
+  function (popSize = 20,
+            pcrossover = 0.8,
+            pmutation = 0.1,
+            maxiter = 10,
+            run = 10,
+            verbose = FALSE)
+  {
+    geneticAlgorithmSearch <- function(data, class, featureSetEval) {
+      if (attr(featureSetEval, "kind") == "Individual measure") {
+        stop("Only feature set measures can be used")
+      }
+      column.names <- names(data)
+      class.position <- which(column.names == class)
+      features <- column.names[-class.position]
+      metricTarget <- attr(featureSetEval, "target")
+      if (metricTarget == "maximize") {
+        max <- TRUE
+      }
+      else if (metricTarget == "minimize") {
+        max <- FALSE
+      }
+      else {
+        max <- ifelse(is.factor(data[, class]), TRUE, FALSE)
+      }
+      fitness <- function(ind, data, class) {
+        feat <- features[which(ind == 1)]
+        if (length(feat) == 0) {
+          if (max) {
+            value <- 0
+          }
+          else {
+            value <- -Inf
+          }
+        }
+        else {
+          if (max) {
+            value <- featureSetEval(data, class, feat)
+          }
+          else {
+            value <- -(featureSetEval(data, class, feat))
+          }
+        }
+        return(value)
+      }
+      if (!verbose) {
+        capture.output(
+          GA <- GA::ga(
+            type = "binary",
+            fitness = fitness,
+            data = data,
+            class = class,
+            nBits = length(features),
+            popSize = popSize,
+            pcrossover = pcrossover,
+            pmutation = pmutation,
+            maxiter = maxiter,
+            run = run
+          )
+        )
+      }
+      else {
+        if (max) {
+          GA <- GA::ga(
+            type = "binary",
+            fitness = fitness,
+            data = data,
+            class = class,
+            nBits = length(features),
+            popSize = popSize,
+            pcrossover = pcrossover,
+            pmutation = pmutation,
+            maxiter = maxiter,
+            run = run
+          )
+        }
+        else {
+          capture.output(
+            GA <- GA::ga(
+              type = "binary",
+              fitness = fitness,
+              data = data,
+              class = class,
+              nBits = length(features),
+              popSize = popSize,
+              pcrossover = pcrossover,
+              pmutation = pmutation,
+              maxiter = maxiter,
+              run = run
+            )
+          )
+        }
+      }
+      res <- list(NULL)
+      res[[1]] <- GA@solution
+      colnames(res[[1]]) <- features
+      res[[2]] <- GA@fitnessValue
+      if (!max) {
+        res[[2]] <- -res[[2]]
+      }
+      ncol <- ncol(data)
+      res[[3]] <- matrix(cbind(GA@population, GA@fitness),
+                         ncol = ncol,
+                         dimnames = list(c(), c(paste0("x", 1:((ncol(data) -
+                                                                  1)
+                         )), c("fitness"))))
+      names(res) <- c("bestFeatures", "bestFitness", "population")
+      if (!max) {
+        res[[3]][, "fitness"] <- -res[[3]][, "fitness"]
+      }
+      res
+    }
+    attr(geneticAlgorithmSearch, "shortName") <- "ga"
+    attr(geneticAlgorithmSearch, "name") <- "Genetic Algorithm"
+    return(geneticAlgorithmSearch)
+  }
+### End of Function-05. 
+### ------------------------------------------------------------------------ ###
+
+
+### ------------------------------------------------------------------------ ###
+### Function-06. SNR. 
+
+snr <- function(x) {
+  y1 <- mean(x[e.p]) - mean(x[c.p])
+  y2 <- sd(x[e.p]) + sd(x[c.p])
+  y <- y1 / y2
+  return(y)
 }
 
 ### End of Function-06. 
 ### ------------------------------------------------------------------------ ###
 
-### End of this chunk. 
-### ****************************************************************************
+### ------------------------------------------------------------------------ ###
+### Function-07. Jaccard index. 
+###  
+
+#####Function-7.1 the Jaccard score between A and B method
+
+Jscore <- function(x, y) {
+  int <- length(intersect(x, y))
+  un <- length(union(x, y))
+  z <- int / un
+  return(z)
+}
+
+#####Function-7.1 the matrix of Jaccard score  between various methods
+
+Jscaore.YHC <- function(x) {
+  n <- length(x)
+  nl <- gtools::permutations(n, 2, repeats = TRUE)
+  m <- length(nl) / 2
+  
+  NAm <- matrix(nrow = n, ncol = n)
+  
+  colnames(NAm) <- names(x)
+  rownames(NAm) <- names(x)
+  for (i in 1:m) {
+    
+    col_index <- nl[i,1]
+    row_index <- nl[i,2]
+    
+    X1 <- x[[col_index]]
+    X2 <- x[[row_index]]
+    
+    R1 <- Jscore(X1, X2)
+    
+    NAm[row_index, col_index] <- R1
+    
+  }
+  return(NAm)
+}
+
+### End of Function-07. 
+### ------------------------------------------------------------------------ ###
