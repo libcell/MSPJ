@@ -3,7 +3,7 @@
 
 - Huachun Yin, Jingxin Tao, Bo Li, *et al.*
 
-<img src = "image/MSPJ-logo.png" width = "800" align = "middle"> 
+<img src = "image/MSPJ-logo.jpg" width = "800" align = "middle"> 
 
 **Please Cite**: HuaChun Yin, JingXin Tao, Yuyang Peng, Ying Xiong, Bo Li, Song Li, Hui Yang. MSPJ: discovering potential biomarkers in small gene expression datasets *via* ensemble learning. *Computational and Structural Biotechnology Journal*, DOI: 10.1016/j.csbj.2022.07.022  
 
