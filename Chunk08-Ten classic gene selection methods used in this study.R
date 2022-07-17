@@ -10,7 +10,7 @@
 ################################################################################
 
 ### ****************************************************************************
-### code chunk number 08: Nine gene selection methods used in this study.
+### code chunk number 08: Gene selection based on three classic methods.
 ### ****************************************************************************
 
 # input: eset - a gene expression matrix, genes in lines and samples in columns. 
@@ -37,7 +37,7 @@ fit2 <- eBayes(fit)
 limmaDEGs <- topTable(fit2, coef = 2, number = Inf)
 
 deg.limma <- limmaDEGs[limmaDEGs$adj.P.Val< pvalue, ]
-
+ 
 deg.limma <- deg.limma[order(deg.limma$adj.P.Val), ]
 
 deg.limma <- rownames(deg.limma)
@@ -95,7 +95,7 @@ genes.lo<-siggenes.table$genes.lo
 degsam <-rbind(genes.up,genes.lo)
 
 degsam <-as.data.frame(degsam)
-
+ 
 degsam$`q-value(%)`<-as.numeric(as.character(degsam$`q-value(%)`))
 
 deg.sam <- degsam[degsam$`q-value(%)`<pvalue,]
@@ -357,5 +357,20 @@ deg.RF<-na.omit(deg.RF)
 ### End of Step-09.
 ### ------------------------------------------------------------------------ ###
 
-### End of Chunk-08.
-### ****************************************************************************
+
+### ------------------------------------------------------------------------ ###
+### Step-10. mRMR
+
+###############################################################
+
+deg.mrmr <- KnowSeq::featureSelection(input[,-1], sam.lab, 
+                                      colnames(input[,-1]),
+                                      mode = "mrmr")
+
+deg.mrmr <-sort(deg.mrmr)
+
+deg.mrmr <- names(deg.mrmr)[1:floor(nrow(eset)*0.3)]
+
+### End of Step-10.
+### ------------------------------------------------------------------------ ###
+
