@@ -1,5 +1,5 @@
 # MSPJ
-[![MSPJ](https://img.shields.io/badge/cqnu_MSPJ-black?style=for-the-badge&logo=icq&logolColor=42F425)](https://github.com/libcell/MSPJ)
+[![MSPJ](https://img.shields.io/badge/cqnu_MSPJ-black?style=for-the-badge&logo=icq&logolColor=42F425)](https://github.com/libcell/MSPJ) https://img.shields.io/badge/License-MIT-red.svg
 
 **MSPJ**: discovering potential biomarkers in small gene expression datasets *via* ensemble learning 
 
