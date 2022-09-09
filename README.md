@@ -1,7 +1,7 @@
 # MSPJ
 **MSPJ**: discovering potential biomarkers in small gene expression datasets *via* ensemble learning
 
-[![MSPJ](https://img.shields.io/badge/icq_new-black?style=for-the-badge&logo=icq&logolColor=42F425)](https://github.com/libcell/MSPJ)
+[![MSPJ](https://img.shields.io/badge/cqnu_MSPJ-black?style=for-the-badge&logo=icq&logolColor=42F425)](https://github.com/libcell/MSPJ)
 
 
 - Huachun Yin, Jingxin Tao, Bo Li, *et al.*
